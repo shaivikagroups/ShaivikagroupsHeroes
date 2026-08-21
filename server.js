@@ -122,6 +122,21 @@ function generateUniqueSlug(fullName) {
     return slug;
 }
 
+// Fallback for root (Handles serverless environments where static middleware might fail)
+app.get('/', (req, res) => {
+    try {
+        const indexPath = path.join(__dirname, 'public', 'index.html');
+        if (fs.existsSync(indexPath)) {
+            res.sendFile(indexPath);
+        } else {
+            // Fallback to process.cwd() for some serverless setups
+            res.sendFile(path.join(process.cwd(), 'public', 'index.html'));
+        }
+    } catch (e) {
+        res.status(500).send("Error loading home page");
+    }
+});
+
 // Portfolio Route
 app.get('/:slug', (req, res) => {
     const employees = getEmployees();
