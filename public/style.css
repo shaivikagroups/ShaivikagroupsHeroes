@@ -98,25 +98,47 @@ body {
     animation: spin-and-shift 15s linear infinite;
 }
 
-/* Rings */
-.ring {
+/* 3D Gamified Hearts */
+.heart {
+    background-color: #ff2a5f;
+    width: 60px;
+    height: 60px;
+    position: absolute;
+    transform: rotate(-45deg);
+    box-shadow: inset -10px -10px 20px rgba(0,0,0,0.4), 0 0 20px rgba(255, 42, 95, 0.8);
+    animation: heart-beat 1.5s infinite alternate cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.heart::before, .heart::after {
+    content: '';
+    background-color: #ff2a5f;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
-    border: 8px solid;
-    box-sizing: border-box;
-    filter: drop-shadow(0 0 10px currentColor);
+    position: absolute;
+    box-shadow: inset -5px -5px 15px rgba(0,0,0,0.2);
 }
-.ring-1 {
-    width: 120px; height: 120px;
-    border-color: #ff3b9a;
+.heart::before {
+    top: -30px;
+    left: 0;
+}
+.heart::after {
+    top: 0;
+    left: 30px;
+}
+.heart-1 {
     top: 15%; right: 10%;
-    animation-duration: 20s;
+    animation-duration: 2.5s;
 }
-.ring-2 {
-    width: 60px; height: 60px;
-    border-color: #00d2ff;
+.heart-2 {
     bottom: 20%; left: 5%;
-    animation-direction: reverse;
-    animation-duration: 12s;
+    transform: scale(0.6) rotate(-45deg);
+    animation-duration: 3s;
+    animation-delay: 1s;
+}
+
+@keyframes heart-beat {
+    0% { transform: scale(0.8) rotate(-45deg); filter: hue-rotate(0deg); }
+    100% { transform: scale(1.2) rotate(-45deg); filter: hue-rotate(40deg); }
 }
 
 /* Crosses (Plus signs like D-pads) */
