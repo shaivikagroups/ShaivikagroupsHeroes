@@ -64,8 +64,8 @@ body {
     position: absolute;
     top: 40%;
     left: 50%;
-    width: 900px;
-    height: 900px;
+    width: min(900px, 150vw);
+    height: min(900px, 150vw);
     transform: translate(-50%, -50%) rotate(-5deg);
     background-image: url('https://res.cloudinary.com/dzfntkzce/image/upload/v1787327106/shaivika_goups_logo_with_background_zym7ap.png');
     background-size: contain;
@@ -265,7 +265,7 @@ body {
     border-radius: 99px; transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); 
     box-shadow: 0 0 10px rgba(110, 59, 255, 0.5); 
 }
-.progress-steps { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 500; color: var(--text-muted); padding: 0 0.5rem; }
+.progress-steps { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 500; color: var(--text-muted); padding: 0; }
 .step { display: flex; align-items: center; gap: 6px; transition: color var(--transition); }
 .step.active { color: var(--primary); font-weight: 600; }
 .step.completed { color: var(--success); font-weight: 600; }
@@ -475,9 +475,41 @@ form { display: flex; flex-direction: column; gap: 3rem; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 @media (max-width: 768px) {
-    .form-card { padding: 2rem 1.5rem; }
-    .hero { flex-direction: column; text-align: center; }
-    .hero h2 { font-size: 2.2rem; }
-    .progress-steps { flex-direction: column; gap: 0.5rem; align-items: flex-start; }
-    .success-actions { flex-direction: column; }
+    body { padding: 1.5rem 0.5rem; }
+    .form-card { padding: 1.5rem 1.25rem; }
+    
+    .hero { flex-direction: column; text-align: center; margin-bottom: 2rem; padding: 0; }
+    .brand-logo { margin: 0 auto 1rem; height: 45px; }
+    .hero h2 { font-size: 2rem; }
+    .hero p { font-size: 1.05rem; }
+    
+    .progress-steps { flex-direction: row; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem 0; }
+    .step { font-size: 0.8rem; flex-basis: 48%; }
+    
+    .success-actions { flex-direction: column; gap: 0.75rem; }
+    .success-screen { padding: 3rem 1.5rem; }
+    .success-screen h2 { font-size: 1.8rem; }
+    
+    .link-group { flex-direction: column; }
+    .portfolio-link-box { padding: 1.25rem; margin: 1.5rem auto; }
+    
+    .upload-zone { padding: 2rem 1rem; }
+    .image-preview { width: 100px; height: 100px; }
+    
+    .game-wrapper { opacity: 0.3; }
+    .float-1, .float-6 { display: none; }
+    
+    .form-section legend { font-size: 1.3rem; }
+    
+    .input-group input, .input-group select, .input-group textarea {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    body { padding: 1rem 0; }
+    .form-card { border-radius: 0; border-left: none; border-right: none; }
+    .step { flex-basis: 100%; }
+    .hero h2 { font-size: 1.7rem; }
+    .submit-btn { padding: 1.15rem 1.5rem; font-size: 1.05rem; }
 }
