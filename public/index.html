@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/dzfntkzce/image/upload/v1787328790/Shaivika_Groups_LogoA12_e1cwfa.png">
+    <title>Employee Portfolio Builder | Shaivika</title>
+    <meta name="description" content="Complete your Shaivika employee profile securely with your professional information, social profiles, device details, and resume.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-elements">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+
+    <main class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <img src="https://res.cloudinary.com/dzfntkzce/image/upload/v1787327106/shaivika_goups_logo_with_background_zym7ap.png" alt="Shaivika Logo" class="brand-logo">
+                <h2>Welcome to Shaivika 👋</h2>
+                <p>Let's get your professional profile ready. Complete your employee information to automatically generate your public digital portfolio.</p>
+            </div>
+            <div class="hero-visual">
+                <div class="cube-container">
+                    <div class="cube">
+                        <div class="face front"></div>
+                        <div class="face back"></div>
+                        <div class="face right"></div>
+                        <div class="face left"></div>
+                        <div class="face top"></div>
+                        <div class="face bottom"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Form Card -->
+        <div class="form-card" id="form-card-container">
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span>Profile Completion</span>
+                    <span id="progress-text">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div class="progress-steps" id="progress-steps">
+                    <span class="step" data-section="personal">Personal <span class="indicator">○</span></span>
+                    <span class="step" data-section="professional">Professional <span class="indicator">○</span></span>
+                    <span class="step" data-section="projects">Projects <span class="indicator">○</span></span>
+                    <span class="step" data-section="documents">Documents <span class="indicator">○</span></span>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form id="onboarding-form" novalidate>
+                <!-- Section: Personal Info -->
+                <fieldset class="form-section" id="section-personal">
+                    <legend>Personal Information</legend>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <input type="text" id="fullName" name="fullName" placeholder=" " required minlength="2">
+                            <label for="fullName">Full Name</label>
+                            <span class="error-message">Please enter your full name (min 2 chars).</span>
+                        </div>
+                        <div class="input-group">
+                            <input type="email" id="email" name="email" placeholder=" " required>
+                            <label for="email">Email Address</label>
+                            <span class="error-message">Please enter a valid email address.</span>
+                        </div>
+                        <div class="input-group">
+                            <input type="tel" id="phone" name="phone" placeholder=" " required>
+                            <label for="phone">Phone Number (e.g. +91...)</label>
+                            <span class="error-message">Please enter a valid phone number.</span>
+                        </div>
+                        <div class="input-group custom-select">
+                            <select id="role" name="role" required>
+                                <option value="" disabled selected hidden></option>
+                                <option value="AI Engineer">AI Engineer</option>
+                                <option value="Data Scientist">Data Scientist</option>
+                                <option value="Data Analyst">Data Analyst</option>
+                                <option value="Full Stack Developer">Full Stack Developer</option>
+                                <option value="Frontend Developer">Frontend Developer</option>
+                                <option value="Backend Developer">Backend Developer</option>
+                                <option value="Python Developer">Python Developer</option>
+                                <option value="Java Developer">Java Developer</option>
+                                <option value="ML Engineer">ML Engineer</option>
+                                <option value="DevOps Engineer">DevOps Engineer</option>
+                                <option value="Cloud Engineer">Cloud Engineer</option>
+                                <option value="UI/UX Designer">UI/UX Designer</option>
+                                <option value="Digital Marketing">Digital Marketing</option>
+                                <option value="HR">HR</option>
+                                <option value="Sales">Sales</option>
+                                <option value="Business Development">Business Development</option>
+                                <option value="Intern">Intern</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <label for="role">Role</label>
+                            <div class="select-arrow"></div>
+                            <span class="error-message">Please select a role.</span>
+                        </div>
+                        <div class="input-group hidden" id="customRoleGroup">
+                            <input type="text" id="customRole" name="customRole" placeholder=" ">
+                            <label for="customRole">Please specify your role</label>
+                            <span class="error-message">Please specify your role.</span>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Section: Professional Info -->
+                <fieldset class="form-section" id="section-professional">
+                    <legend>Professional Profile</legend>
+                    <div class="form-grid">
+                        <div class="input-group full-width">
+                            <textarea id="summary" name="summary" placeholder=" " required minlength="10" rows="3" class="auto-resize"></textarea>
+                            <label for="summary">Professional Summary</label>
+                            <div class="char-counter"><span id="summary-count">0</span> / 500</div>
+                            <p class="field-hint">Write a short professional summary about your skills, experience, and career focus. (Visible on portfolio)</p>
+                            <span class="error-message">Please provide a summary (min 10 chars).</span>
+                        </div>
+                        <div class="input-group">
+                            <input type="url" id="linkedin" name="linkedin" placeholder=" " required>
+                            <label for="linkedin">LinkedIn URL</label>
+                            <span class="error-message">Please enter a valid LinkedIn URL.</span>
+                        </div>
+                        <div class="input-group">
+                            <input type="url" id="github" name="github" placeholder=" " required>
+                            <label for="github">GitHub URL</label>
+                            <span class="error-message">Please enter a valid GitHub URL.</span>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Section: Projects -->
+                <fieldset class="form-section full-width" id="section-projects">
+                    <legend>Projects Showcase</legend>
+                    <p class="section-hint">Add key projects to feature on your professional portfolio.</p>
+                    
+                    <div id="projects-container">
+                        <!-- Project cards will be injected here via JS -->
+                    </div>
+                    
+                    <button type="button" id="add-project-btn" class="secondary-btn">
+                        + Add Another Project
+                    </button>
+                </fieldset>
+
+                <!-- Section: Documents & Media -->
+                <fieldset class="form-section full-width" id="section-documents">
+                    <legend>Documents & Media</legend>
+                    <div class="form-grid">
+                        
+                        <!-- Profile Photo Upload -->
+                        <div class="upload-zone photo-zone" id="photo-upload-zone">
+                            <input type="file" id="profilePhoto" name="profilePhoto" accept=".jpg,.jpeg,.png,.webp" hidden>
+                            <div class="upload-content" id="photo-upload-content">
+                                <div class="upload-icon">👤</div>
+                                <h3>Profile Photo</h3>
+                                <p class="upload-desc">Drag & drop or <span class="browse-link" onclick="document.getElementById('profilePhoto').click()">Browse</span></p>
+                                <p class="upload-limits">JPG, PNG, WEBP | Max 5MB</p>
+                            </div>
+                            <div class="image-preview hidden" id="photo-preview">
+                                <img src="" alt="Profile Preview" id="photo-img-preview">
+                                <button type="button" class="remove-file icon-btn" id="remove-photo" aria-label="Remove photo">✕</button>
+                            </div>
+                            <span class="error-message upload-error" id="photo-error"></span>
+                        </div>
+
+                        <!-- Resume Upload -->
+                        <div class="upload-zone" id="resume-upload-zone">
+                            <input type="file" id="resume" name="resume" accept=".pdf,.doc,.docx" hidden>
+                            <div class="upload-content" id="resume-upload-content">
+                                <div class="upload-icon">📄</div>
+                                <h3>Resume Document</h3>
+                                <p class="upload-desc">Drag & drop or <span class="browse-link" onclick="document.getElementById('resume').click()">Browse</span></p>
+                                <p class="upload-limits">PDF, DOC, DOCX | Max 10MB</p>
+                            </div>
+                            <div class="file-preview hidden" id="resume-preview">
+                                <div class="file-info">
+                                    📄
+                                    <div class="file-details">
+                                        <span class="filename" id="resume-filename">resume.pdf</span>
+                                        <span class="filesize" id="resume-filesize">2.4 MB</span>
+                                    </div>
+                                </div>
+                                <button type="button" class="remove-file icon-btn" id="remove-resume" aria-label="Remove resume">✕</button>
+                            </div>
+                            <span class="error-message upload-error" id="resume-error"></span>
+                        </div>
+
+                    </div>
+                </fieldset>
+
+                <!-- Section: Device Info (Internal) -->
+                <fieldset class="form-section" id="section-device">
+                    <legend>Internal Information</legend>
+                    <p class="section-hint text-warning">This information is for Shaivika administration only and will not appear on your public portfolio.</p>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <input type="text" id="laptopName" name="laptopName" placeholder=" " required>
+                            <label for="laptopName">Laptop Name (e.g. Macbook Pro M3)</label>
+                            <span class="error-message">Please provide your laptop name.</span>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" id="mobileName" name="mobileName" placeholder=" " required>
+                            <label for="mobileName">Mobile Name (e.g. iPhone 15)</label>
+                            <span class="error-message">Please provide your mobile name.</span>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Status & Submit -->
+                <div class="form-actions">
+                    <div class="privacy-notice">
+                        🔒 Your internal details remain private. Your public portfolio is generated securely using your professional information.
+                    </div>
+                    
+                    <div id="form-feedback" class="form-feedback hidden"></div>
+
+                    <button type="submit" class="submit-btn" id="submit-btn">
+                        <span class="btn-text">Generate My Portfolio &rarr;</span>
+                        <span class="loader hidden"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Success Screen -->
+        <div class="success-screen hidden" id="success-screen">
+            <div class="success-icon-wrapper">
+                <div class="success-icon">🎉</div>
+            </div>
+            <h2>Your Shaivika Portfolio is Ready!</h2>
+            <p>Your profile has been saved and your public portfolio is live.</p>
+            
+            <div class="portfolio-link-box">
+                <span class="label">Your Portfolio Link:</span>
+                <div class="link-group">
+                    <input type="text" id="generated-url" readonly value="https://shaivika.com/portfolio/manoj">
+                    <button type="button" id="copy-btn" class="secondary-btn small-btn">Copy</button>
+                </div>
+            </div>
+
+            <div class="success-actions">
+                <a href="#" id="view-portfolio-btn" target="_blank" class="submit-btn">View My Portfolio &rarr;</a>
+                <button type="button" class="done-btn" onclick="location.reload()">Submit Another</button>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

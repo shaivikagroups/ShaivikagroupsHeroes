@@ -1,0 +1,30 @@
+[
+  {
+    "slug": "manoj",
+    "fullName": "Manoj",
+    "email": "sharabumanojachari@gmail.com",
+    "phone": "7013550760",
+    "role": "Python Developer",
+    "linkedin": "https://www.linkedin.com/in/sharabu-manoj-kumar?originalSubdomain=in",
+    "github": "https://github.com/SHARABUMANOJKUMAR",
+    "summary": "Now I added a Another Field called Profile Photo in Googlesheet . and After Submitting the Form The Get Protofolio on Their data Like SuPer Proffesional Protofolio and Autometic Proffesional SEO on Employee.and With There Correct Data , The Protofolio Should Be More Attractive,More Designs,3D Designs and Colour full , With out Dark Colours,and All Devices Responsive Correct Flexible Responsives. and In Protofolio Dont Mention T Name.and also Store in Cloudinery and Link Store in Googlesheet.",
+    "projects": [
+      {
+        "name": "AI LeXa Lawyer",
+        "description": "With There Correct Data , The Protofolio Should Be More Attractive,More Designs,3D Designs and Colour full , With out Dark Colours,and All Devices Responsive Correct Flexible Responsives. and In Protofolio Dont Mention T Name.and also Store in Cloudinery and Link Store in Googlesheet.",
+        "technologies": [
+          "Python",
+          "C",
+          "ML",
+          "AI."
+        ],
+        "projectUrl": "https://www.linkedin.com/in/sharabu-manoj-kumar/",
+        "githubUrl": "https://github.com/SHARABUMANOJKUMAR"
+      }
+    ],
+    "profilePhotoUrl": "https://res.cloudinary.com/dzfntkzce/image/upload/f_auto,q_auto/v1787323028/shaivika/employees/profile-photos/photo_1787323026261_rkzowl.jpg",
+    "resumeUrl": "https://res.cloudinary.com/dzfntkzce/raw/upload/v1787323029/shaivika/employees/resumes/employee_1787323029779_t1kbyt",
+    "portfolioUrl": "http://localhost:3000/portfolio/manoj",
+    "submittedAt": "2026-08-21T14:37:10.763Z"
+  }
+]

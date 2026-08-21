@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Welcome to Shaivika</title>
+    <style type="text/css">
+        /* Reset */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+        body { margin: 0; padding: 0; width: 100% !important; background-color: #F4F7FE; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+        
+        /* Typography */
+        h1, h2, h3, p { margin: 0; padding: 0; }
+        .text-center { text-align: center; }
+        .primary-text { color: #5A2EDB; } /* Electric Purple */
+        .secondary-text { color: #0ea5e9; } /* Bright Blue */
+        
+        /* Layout */
+        .email-container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(90, 46, 219, 0.1); margin-top: 20px; margin-bottom: 20px; }
+        .content-padding { padding: 40px; }
+        
+        /* Header / Logo */
+        .header { background: linear-gradient(135deg, #ffffff 0%, #F0EBFF 100%); text-align: center; padding: 30px 20px; border-bottom: 3px solid #0ea5e9; }
+        .logo-img { width: 150px; max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        
+        /* 3D-Like Hero Banner */
+        .hero-banner { 
+            background: linear-gradient(135deg, #5A2EDB 0%, #8B5CF6 100%); 
+            padding: 40px 20px; 
+            text-align: center; 
+            color: #ffffff; 
+            margin: 20px 40px;
+            border-radius: 16px;
+            border-bottom: 5px solid #431EAB; /* 3D bottom edge */
+            border-right: 3px solid #431EAB; /* 3D right edge */
+        }
+        .hero-banner h1 { font-size: 28px; font-weight: 700; margin-bottom: 10px; letter-spacing: 0.5px; }
+        .hero-banner p { font-size: 16px; opacity: 0.9; }
+
+        /* Main Content */
+        .main-content { font-size: 16px; line-height: 1.6; color: #333333; }
+        .highlight-box {
+            background-color: #e0f2fe;
+            border-left: 4px solid #0ea5e9;
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 25px 0;
+            font-size: 15px;
+        }
+
+        /* Call to Action Button */
+        .button-wrapper { text-align: center; margin: 35px 0; }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #FF3B9A 0%, #FF65B2 100%);
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            border-bottom: 4px solid #D61B78; /* 3D bottom edge */
+            box-shadow: 0 8px 15px rgba(255, 59, 154, 0.3);
+        }
+
+        /* Footer */
+        .footer { background-color: #FAFAFA; padding: 30px; text-align: center; font-size: 13px; color: #888888; border-top: 1px solid #EEEEEE; }
+        
+        /* Responsive */
+        @media screen and (max-width: 600px) {
+            .email-container { width: 100% !important; border-radius: 0 !important; margin-top: 0; }
+            .content-padding { padding: 20px !important; }
+            .hero-banner { margin: 10px 20px; }
+        }
+    </style>
+</head>
+<body width="100%" style="margin: 0; padding: 0 !important; mso-line-height-rule: exactly; background-color: #F4F7FE;">
+    <center style="width: 100%; background-color: #F4F7FE;">
+        <!-- Email Container -->
+        <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="margin: auto;" class="email-container">
+            
+            <!-- Header -->
+            <tr>
+                <td class="header">
+                    <img src="https://res.cloudinary.com/dzfntkzce/image/upload/v1787319258/Shaivika_Groups_Logo999_rpytmm.jpg" alt="Shaivika Logo" class="logo-img">
+                </td>
+            </tr>
+
+            <!-- Hero Banner with 3D Effect -->
+            <tr>
+                <td>
+                    <div class="hero-banner">
+                        <h1>Welcome Aboard, <?= fullName ?>! 🎉</h1>
+                        <p>Your digital identity is now officially live.</p>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Body Content -->
+            <tr>
+                <td class="content-padding main-content">
+                    <p>Hi <strong><?= fullName ?></strong>,</p>
+                    <br>
+                    <p>We are thrilled to officially welcome you to the Shaivika team as our newest <strong class="secondary-text"><?= role ?></strong>. Your employee onboarding information has been securely saved and processed.</p>
+                    
+                    <div class="highlight-box">
+                        <strong>Exciting News:</strong> Your professional MNC-level portfolio has been automatically generated using the details you provided.
+                    </div>
+
+                    <p>You can view, share, and link your stunning new portfolio to showcase your projects and skills to the world.</p>
+
+                    <!-- CTA Button -->
+                    <div class="button-wrapper">
+                        <a href="<?= portfolioUrl ?>" class="btn">View My Portfolio &rarr;</a>
+                    </div>
+
+                    <p>If you need to update any information or have questions about your onboarding process, please don't hesitate to reach out to our HR department.</p>
+                    <br>
+                    <p>Once again, welcome to the team. Let's build something wonderful together!</p>
+                    <br>
+                    <p>Best regards,<br><strong>The Shaivika Leadership Team</strong></p>
+                </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+                <td class="footer">
+                    <p>&copy; 2026 Shaivika Groups. All Rights Reserved.</p>
+                    <p>This is an automated onboarding email. Please do not reply directly to this address.</p>
+                </td>
+            </tr>
+            
+        </table>
+    </center>
+</body>
+</html>
