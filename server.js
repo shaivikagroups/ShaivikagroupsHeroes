@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
 const { v2: cloudinary } = require('cloudinary');
-const { GoogleSpreadsheet } = require('google-spreadsheet');
+
 const fs = require('fs');
 const path = require('path');
 
