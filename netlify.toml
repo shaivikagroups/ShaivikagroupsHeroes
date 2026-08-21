@@ -7,12 +7,14 @@
   node_bundler = "esbuild"
   included_files = ["data/**"]
 
+# API calls go to the serverless function
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api/api/:splat"
   status = 200
   force = true
 
+# Clean portfolio URLs handled by the serverless function (SSR SEO)
 [[redirects]]
   from = "/*"
   to = "/.netlify/functions/api/:splat"

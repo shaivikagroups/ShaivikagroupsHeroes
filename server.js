@@ -84,13 +84,19 @@ try {
 
 function getEmployees() {
     try {
-        // Try /tmp first if in serverless environment
-        if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+        // Use /tmp for all serverless environments (Netlify, Vercel, AWS Lambda)
+        const isServerless = process.env.NETLIFY || process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME;
+        if (isServerless) {
             if (fs.existsSync('/tmp/employees.json')) {
                 return JSON.parse(fs.readFileSync('/tmp/employees.json', 'utf8'));
             }
+            // On cold start: sync from local data file if it was bundled
+            if (fs.existsSync(dataFilePath)) {
+                return JSON.parse(fs.readFileSync(dataFilePath, 'utf8'));
+            }
+            return [];
         }
-        // Fallback to the persistent data folder
+        // Local dev: use the persistent data folder
         if (fs.existsSync(dataFilePath)) {
             return JSON.parse(fs.readFileSync(dataFilePath, 'utf8'));
         }
@@ -106,7 +112,9 @@ function saveEmployee(employee) {
         employees.push(employee);
         
         let targetPath = dataFilePath;
-        if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+        // Use /tmp for all serverless environments
+        const isServerless = process.env.NETLIFY || process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME;
+        if (isServerless) {
             targetPath = '/tmp/employees.json';
         }
         fs.writeFileSync(targetPath, JSON.stringify(employees, null, 2));
@@ -256,48 +264,31 @@ app.post('/api/submit', upload.fields([
   }
 });
 
-// Sitemap Route
-app.get('/sitemap.xml', (req, res) => {
-    const employees = getEmployees();
-    const baseUrl = 'https://shaivikagroupsheros.netlify.app';
-    
-    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
-    xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
-    
-    xml += `  <url>\n    <loc>${baseUrl}/</loc>\n    <priority>1.0</priority>\n  </url>\n`;
-    
-    employees.forEach(employee => {
-        if (employee.slug) {
-            xml += `  <url>\n    <loc>${baseUrl}/${employee.slug}</loc>\n    <priority>0.8</priority>\n  </url>\n`;
-        }
-    });
-    
-    xml += `</urlset>`;
-    
-    res.header('Content-Type', 'application/xml');
-    res.send(xml);
-});
-
-// Clean URL Route (Fallback for /:slug)
+// Clean URL Route (Fallback for /:slug) - MUST come after all API routes
 app.get('/:slug', (req, res) => {
-    // Ignore API routes
-    if (req.path.startsWith('/api/')) return res.status(404).end();
+    const slug = req.params.slug;
     
+    // Skip requests for static file extensions — let express.static handle them
+    if (/\.[a-zA-Z0-9]{1,5}$/.test(slug)) {
+        return res.status(404).end();
+    }
+
     const filePath = path.join(__dirname, 'public', 'portfolio.html');
     if (!fs.existsSync(filePath)) {
-        return res.status(404).send("Portfolio template not found");
+        return res.status(404).send('Portfolio template not found');
     }
 
     let html = fs.readFileSync(filePath, 'utf-8');
     
-    // Inject SEO if employee exists
-    const slug = req.params.slug;
+    // Inject SEO metadata if employee exists
     const employees = getEmployees();
     const employee = employees.find(e => e.slug === slug);
 
     if (employee) {
         const title = `${employee.fullName} | ${employee.role} | Shaivika`;
-        const description = employee.summary ? employee.summary.substring(0, 150) + '...' : `View the professional portfolio of ${employee.fullName}.`;
+        const description = employee.summary 
+            ? employee.summary.substring(0, 150) + '...' 
+            : `View the professional portfolio of ${employee.fullName}.`;
         
         html = html.replace('<title>Employee Portfolio | Shaivika</title>', `<title>${title}</title>`);
         html = html.replace('content="Professional portfolio at Shaivika."', `content="${description}"`);
@@ -310,41 +301,6 @@ app.get('/:slug', (req, res) => {
         if (employee.portfolioUrl) {
             html = html.replace('id="og-url" content=""', `id="og-url" content="${employee.portfolioUrl}"`);
         }
-        
-        // Inject Advanced SEO (Twitter, Canonical, JSON-LD, Robots)
-        const advancedSeo = `
-    <!-- Advanced Dynamic SEO -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="${title}">
-    <meta name="twitter:description" content="${description}">
-    <meta name="twitter:image" content="${employee.profilePhotoUrl || ''}">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://shaivikagroupsheros.netlify.app/${slug}" />
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "${employee.fullName}",
-      "jobTitle": "${employee.role}",
-      "image": "${employee.profilePhotoUrl || ''}",
-      "url": "https://shaivikagroupsheros.netlify.app/${slug}",
-      "sameAs": [
-        "${employee.linkedin || ''}",
-        "${employee.github || ''}"
-      ],
-      "worksFor": {
-        "@type": "Organization",
-        "name": "Shaivika"
-      }
-    }
-    </script>
-</head>`;
-        html = html.replace('</head>', advancedSeo);
-    } else {
-        // Private or Not Found profile - prevent indexing
-        html = html.replace('</head>', `
-    <meta name="robots" content="noindex, nofollow">
-</head>`);
     }
 
     res.send(html);
