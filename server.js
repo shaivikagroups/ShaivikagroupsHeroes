@@ -84,15 +84,26 @@ try {
 
 function getEmployees() {
     try {
-        // Use /tmp for all serverless environments (Netlify, Vercel, AWS Lambda)
         const isServerless = process.env.NETLIFY || process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME;
         if (isServerless) {
+            // Try /tmp first (has data from previous submissions in this instance)
             if (fs.existsSync('/tmp/employees.json')) {
                 return JSON.parse(fs.readFileSync('/tmp/employees.json', 'utf8'));
             }
-            // On cold start: sync from local data file if it was bundled
-            if (fs.existsSync(dataFilePath)) {
-                return JSON.parse(fs.readFileSync(dataFilePath, 'utf8'));
+            // Cold start: try multiple paths to find the bundled data file
+            const candidatePaths = [
+                dataFilePath,
+                path.join(process.cwd(), 'data', 'employees.json'),
+                path.join(__dirname, '..', 'data', 'employees.json'),
+                path.join(__dirname, 'data', 'employees.json'),
+            ];
+            for (const p of candidatePaths) {
+                if (fs.existsSync(p)) {
+                    const data = JSON.parse(fs.readFileSync(p, 'utf8'));
+                    // Warm /tmp for subsequent calls in this instance
+                    fs.writeFileSync('/tmp/employees.json', JSON.stringify(data, null, 2));
+                    return data;
+                }
             }
             return [];
         }
