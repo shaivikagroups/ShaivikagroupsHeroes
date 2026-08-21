@@ -185,7 +185,7 @@ app.post('/api/submit', upload.fields([
     // 3. Generate Slug and Portfolio URL
     const slug = generateUniqueSlug(fullName);
     const host = req.get('host');
-    const portfolioUrl = `${req.protocol}://${host}/portfolio.html?slug=${slug}`;
+    const portfolioUrl = `${req.protocol}://${host}/${slug}`;
 
     // 4. Save to Local Cache (Excluding private device data for rendering safety)
     let parsedProjects = [];
@@ -254,6 +254,19 @@ app.post('/api/submit', upload.fields([
     console.error('Submission Error:', error);
     res.status(500).json({ error: error.message || 'An error occurred during submission.' });
   }
+});
+
+// Clean URL Route (Fallback for /:slug)
+app.get('/:slug', (req, res) => {
+    // Ignore API routes
+    if (req.path.startsWith('/api/')) return res.status(404).end();
+    
+    const filePath = path.join(__dirname, 'public', 'portfolio.html');
+    if (fs.existsSync(filePath)) {
+        res.sendFile(filePath);
+    } else {
+        res.status(404).send("Portfolio template not found");
+    }
 });
 
 // Start Server

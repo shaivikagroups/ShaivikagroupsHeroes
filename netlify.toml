@@ -12,3 +12,8 @@
   to = "/.netlify/functions/api/api/:splat"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/portfolio.html"
+  status = 200

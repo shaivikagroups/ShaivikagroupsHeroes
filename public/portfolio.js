@@ -1,9 +1,17 @@
 document.addEventListener('DOMContentLoaded', async () => {
+    // Attempt to get slug from query param first, then fallback to pathname
     const urlParams = new URLSearchParams(window.location.search);
-    const slug = urlParams.get('slug');
+    let slug = urlParams.get('slug');
+    
+    if (!slug) {
+        const pathParts = window.location.pathname.split('/').filter(Boolean);
+        if (pathParts.length > 0) {
+            slug = pathParts[pathParts.length - 1]; // Get last part of the path
+        }
+    }
 
     if (!slug) {
-        showError();
+        showError("No profile requested. URL is missing the slug.");
         return;
     }
 
