@@ -256,6 +256,28 @@ app.post('/api/submit', upload.fields([
   }
 });
 
+// Sitemap Route
+app.get('/sitemap.xml', (req, res) => {
+    const employees = getEmployees();
+    const baseUrl = 'https://shaivikagroupsheros.netlify.app';
+    
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+    xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+    
+    xml += `  <url>\n    <loc>${baseUrl}/</loc>\n    <priority>1.0</priority>\n  </url>\n`;
+    
+    employees.forEach(employee => {
+        if (employee.slug) {
+            xml += `  <url>\n    <loc>${baseUrl}/${employee.slug}</loc>\n    <priority>0.8</priority>\n  </url>\n`;
+        }
+    });
+    
+    xml += `</urlset>`;
+    
+    res.header('Content-Type', 'application/xml');
+    res.send(xml);
+});
+
 // Clean URL Route (Fallback for /:slug)
 app.get('/:slug', (req, res) => {
     // Ignore API routes
@@ -288,6 +310,41 @@ app.get('/:slug', (req, res) => {
         if (employee.portfolioUrl) {
             html = html.replace('id="og-url" content=""', `id="og-url" content="${employee.portfolioUrl}"`);
         }
+        
+        // Inject Advanced SEO (Twitter, Canonical, JSON-LD, Robots)
+        const advancedSeo = `
+    <!-- Advanced Dynamic SEO -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="${title}">
+    <meta name="twitter:description" content="${description}">
+    <meta name="twitter:image" content="${employee.profilePhotoUrl || ''}">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://shaivikagroupsheros.netlify.app/${slug}" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "${employee.fullName}",
+      "jobTitle": "${employee.role}",
+      "image": "${employee.profilePhotoUrl || ''}",
+      "url": "https://shaivikagroupsheros.netlify.app/${slug}",
+      "sameAs": [
+        "${employee.linkedin || ''}",
+        "${employee.github || ''}"
+      ],
+      "worksFor": {
+        "@type": "Organization",
+        "name": "Shaivika"
+      }
+    }
+    </script>
+</head>`;
+        html = html.replace('</head>', advancedSeo);
+    } else {
+        // Private or Not Found profile - prevent indexing
+        html = html.replace('</head>', `
+    <meta name="robots" content="noindex, nofollow">
+</head>`);
     }
 
     res.send(html);
