@@ -75,7 +75,7 @@ const uploadToCloudinary = (buffer, filename, folder, resource_type = 'raw') => 
 // Data Storage (Local JSON Cache)
 let dataFilePath = path.join(__dirname, 'data', 'employees.json');
 try {
-    if (process.env.VERCEL) {
+    if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
         dataFilePath = '/tmp/employees.json';
     } else {
         if (!fs.existsSync(path.dirname(dataFilePath))) {
@@ -242,7 +242,7 @@ app.post('/api/submit', upload.fields([
 });
 
 // Start Server
-if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
   });
