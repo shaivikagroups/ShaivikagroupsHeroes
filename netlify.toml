@@ -14,8 +14,14 @@
   status = 200
   force = true
 
-# Clean portfolio URLs handled by the serverless function (SSR SEO)
+# Ensure root always serves the form (index.html)
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200
+
+# Clean portfolio URLs: serve portfolio.html statically (JS reads slug from path)
 [[redirects]]
   from = "/*"
-  to = "/.netlify/functions/api/:splat"
+  to = "/portfolio.html"
   status = 200
