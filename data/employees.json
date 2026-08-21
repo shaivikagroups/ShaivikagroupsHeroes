@@ -26,5 +26,34 @@
     "resumeUrl": "https://res.cloudinary.com/dzfntkzce/raw/upload/v1787323029/shaivika/employees/resumes/employee_1787323029779_t1kbyt",
     "portfolioUrl": "http://localhost:3000/portfolio/manoj",
     "submittedAt": "2026-08-21T14:37:10.763Z"
+  },
+  {
+    "slug": "s-manoj",
+    "fullName": "S.Manoj",
+    "email": "sharabumanoj123@gmail.com",
+    "phone": "7013550760",
+    "role": "DevOps Engineer",
+    "linkedin": "https://docs.google.com/presentation/",
+    "github": "https://docs.google.com/presentation/",
+    "summary": "Netlify can run Express through Netlify Functions, but that requires adapting the Express application to the Netlify Functions architecture. Netlify's current documentation specifically describes Express running through serverless functions.",
+    "projects": [
+      {
+        "name": "AI LeXa Lawyer",
+        "description": "Netlify can run Express through Netlify Functions, but that requires adapting the Express application to the Netlify Functions architecture. Netlify's current documentation specifically describes Express running through serverless functions.",
+        "technologies": [
+          "Python",
+          "C",
+          "Java",
+          "AI",
+          "ML"
+        ],
+        "projectUrl": "https://docs.google.com/presentation/",
+        "githubUrl": "https://docs.google.com/presentation/"
+      }
+    ],
+    "profilePhotoUrl": "https://res.cloudinary.com/dzfntkzce/image/upload/f_auto,q_auto/v1787336851/shaivika/employees/profile-photos/photo_1787336843632_lz3opl.png",
+    "resumeUrl": "https://res.cloudinary.com/dzfntkzce/raw/upload/v1787336853/shaivika/employees/resumes/employee_1787336854016_q31yhf",
+    "portfolioUrl": "http://localhost:3000/portfolio.html?slug=s-manoj",
+    "submittedAt": "2026-08-21T18:27:34.897Z"
   }
 ]

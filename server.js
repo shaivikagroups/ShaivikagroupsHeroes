@@ -10,9 +10,7 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Set EJS as templating engine
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+// EJS removed for purely static frontend
 
 // Middleware
 app.use(cors());
@@ -72,15 +70,10 @@ const uploadToCloudinary = (buffer, filename, folder, resource_type = 'raw') => 
   });
 };
 
-// Data Storage (Local JSON Cache)
 let dataFilePath = path.join(__dirname, 'data', 'employees.json');
 try {
-    if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
-        dataFilePath = '/tmp/employees.json';
-    } else {
-        if (!fs.existsSync(path.dirname(dataFilePath))) {
-            fs.mkdirSync(path.dirname(dataFilePath), { recursive: true });
-        }
+    if (!fs.existsSync(path.dirname(dataFilePath))) {
+        fs.mkdirSync(path.dirname(dataFilePath), { recursive: true });
     }
     if (!fs.existsSync(dataFilePath)) {
         fs.writeFileSync(dataFilePath, JSON.stringify([]));
@@ -91,6 +84,13 @@ try {
 
 function getEmployees() {
     try {
+        // Try /tmp first if in serverless environment
+        if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+            if (fs.existsSync('/tmp/employees.json')) {
+                return JSON.parse(fs.readFileSync('/tmp/employees.json', 'utf8'));
+            }
+        }
+        // Fallback to the persistent data folder
         if (fs.existsSync(dataFilePath)) {
             return JSON.parse(fs.readFileSync(dataFilePath, 'utf8'));
         }
@@ -104,7 +104,12 @@ function saveEmployee(employee) {
     try {
         const employees = getEmployees();
         employees.push(employee);
-        fs.writeFileSync(dataFilePath, JSON.stringify(employees, null, 2));
+        
+        let targetPath = dataFilePath;
+        if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+            targetPath = '/tmp/employees.json';
+        }
+        fs.writeFileSync(targetPath, JSON.stringify(employees, null, 2));
     } catch(e) {
         console.error("Error saving employee:", e);
     }
@@ -137,21 +142,16 @@ app.get('/', (req, res) => {
     }
 });
 
-// Portfolio Route
-app.get('/:slug', (req, res) => {
+// API endpoint to fetch employee data
+app.get('/api/employee/:slug', (req, res) => {
     const employees = getEmployees();
     const employee = employees.find(emp => emp.slug === req.params.slug);
     
     if (!employee) {
-        return res.status(404).send('Portfolio not found');
+        return res.status(404).json({ error: 'Portfolio not found' });
     }
     
-    // Pass host for canonical URL
-    const host = req.get('host');
-    const protocol = req.protocol;
-    const fullUrl = `${protocol}://${host}${req.originalUrl}`;
-    
-    res.render('portfolio', { employee, fullUrl });
+    res.json(employee);
 });
 
 // API Endpoint to submit form
@@ -185,7 +185,7 @@ app.post('/api/submit', upload.fields([
     // 3. Generate Slug and Portfolio URL
     const slug = generateUniqueSlug(fullName);
     const host = req.get('host');
-    const portfolioUrl = `${req.protocol}://${host}/${slug}`;
+    const portfolioUrl = `${req.protocol}://${host}/portfolio.html?slug=${slug}`;
 
     // 4. Save to Local Cache (Excluding private device data for rendering safety)
     let parsedProjects = [];

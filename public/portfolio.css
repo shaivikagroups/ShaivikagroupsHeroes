@@ -2,6 +2,10 @@
    SHAIVIKA EMPLOYEE PORTFOLIO V4 - WORLD-CLASS SIGNATURE DESIGN
    ========================================================================== */
 
+.hidden {
+    display: none !important;
+}
+
 /* 1. Core Variables & Design System */
 :root {
     /* Primary Color System */
