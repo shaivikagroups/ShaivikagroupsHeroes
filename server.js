@@ -73,7 +73,7 @@ const uploadToCloudinary = (buffer, filename, folder, resource_type = 'raw') => 
 };
 
 // Data Storage (Local JSON Cache)
-const dataFilePath = path.join(__dirname, 'data', 'employees.json');
+const dataFilePath = process.env.VERCEL ? '/tmp/employees.json' : path.join(__dirname, 'data', 'employees.json');
 if (!fs.existsSync(path.dirname(dataFilePath))) {
     fs.mkdirSync(path.dirname(dataFilePath), { recursive: true });
 }
@@ -223,6 +223,11 @@ app.post('/api/submit', upload.fields([
 });
 
 // Start Server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+  });
+}
+
+// Export for Vercel
+module.exports = app;
