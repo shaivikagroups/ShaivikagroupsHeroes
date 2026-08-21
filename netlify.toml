@@ -1,9 +1,16 @@
 [build]
+  command = "npm install"
   functions = "netlify/functions"
   publish = "public"
 
 [functions]
-  included_files = ["views/**"]
+  node_bundler = "esbuild"
+  included_files = ["views/**", "public/**", "data/**"]
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
 
 [[redirects]]
   from = "/*"
