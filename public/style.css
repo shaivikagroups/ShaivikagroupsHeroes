@@ -97,32 +97,94 @@ body {
     animation: float-3d 12s infinite ease-in-out alternate;
 }
 
-.game-emoji {
-    display: inline-block;
-    font-size: 5rem;
-    opacity: 0.9;
-    animation: color-shift 10s infinite linear, spin-3d 8s infinite linear;
-    filter: drop-shadow(0 15px 25px rgba(255, 215, 0, 0.6));
+/* Abstract Geometric 3D CSS Shapes */
+.css-shape {
+    position: relative;
+    transform-style: preserve-3d;
+    animation: color-shift 10s infinite linear;
+    filter: drop-shadow(0 15px 30px rgba(255, 215, 0, 0.4));
 }
 
+/* 1. Double Ring (Atom style) */
+.shape-ring-double {
+    width: 90px; height: 90px;
+    border: 10px solid currentColor;
+    border-radius: 50%;
+    color: #ffd700;
+}
+.shape-ring-double .ring-inner {
+    position: absolute; top: -10px; left: -10px; width: 90px; height: 90px;
+    border: 10px solid currentColor; border-radius: 50%;
+    transform: rotateX(75deg) rotateY(25deg);
+}
+
+/* 2. Hollow Box */
+.shape-box {
+    width: 80px; height: 80px;
+    border: 12px solid currentColor;
+    color: #ff8c00;
+}
+
+/* 3. Glowing Triangle */
+.shape-triangle {
+    width: 0; height: 0;
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    border-bottom: 85px solid currentColor;
+    color: #00d2ff;
+}
+
+/* 4. Bold Cross (D-Pad) */
+.shape-cross {
+    width: 90px; height: 90px;
+    color: #00ff80;
+}
+.shape-cross::before, .shape-cross::after {
+    content: ''; position: absolute; background: currentColor; border-radius: 6px;
+}
+.shape-cross::before { top: 35px; left: 0; width: 90px; height: 20px; }
+.shape-cross::after { top: 0; left: 35px; width: 20px; height: 90px; }
+
+/* 5. Hollow Diamond */
+.shape-diamond {
+    width: 75px; height: 75px;
+    border: 12px solid currentColor;
+    transform: rotate(45deg);
+    color: #ff3b9a;
+}
+
+/* 6. Hexagon */
+.shape-hexagon {
+    width: 60px; height: 35px;
+    background: currentColor;
+    position: relative;
+    color: #a200ff;
+    margin-top: 17px;
+}
+.shape-hexagon::before, .shape-hexagon::after {
+    content: ""; position: absolute; width: 0; border-left: 30px solid transparent; border-right: 30px solid transparent;
+}
+.shape-hexagon::before { bottom: 100%; border-bottom: 17px solid currentColor; }
+.shape-hexagon::after { top: 100%; width: 0; border-top: 17px solid currentColor; }
+
 /* Perfectly Aligned to avoid overlapping and frame the form */
-.float-1 { top: 12%; left: 6%; animation-duration: 16s; animation-delay: 0s; font-size: 5.5rem; }
-.float-1 .game-emoji { animation-duration: 8s; animation-delay: 0s; }
+.float-1 { top: 12%; left: 8%; animation-duration: 16s; animation-delay: 0s; transform: scale(1.1); }
+.float-1 .css-shape { animation-duration: 8s; animation-delay: 0s; }
 
-.float-2 { top: 15%; right: 6%; animation-duration: 19s; animation-delay: -3s; font-size: 5rem; }
-.float-2 .game-emoji { animation-duration: 12s; animation-delay: -5s; }
+.float-2 { top: 15%; right: 8%; animation-duration: 19s; animation-delay: -3s; transform: scale(1.3); }
+.float-2 .css-shape { animation-duration: 12s; animation-delay: -5s; }
 
-.float-3 { top: 45%; left: 8%; animation-duration: 21s; animation-delay: -7s; font-size: 4.5rem; }
-.float-3 .game-emoji { animation-duration: 15s; animation-delay: -2s; }
+.float-3 { top: 45%; left: 8%; animation-duration: 21s; animation-delay: -7s; transform: scale(0.9); }
+.float-3 .css-shape { animation-duration: 15s; animation-delay: -2s; }
 
-.float-4 { top: 50%; right: 8%; animation-duration: 14s; animation-delay: -2s; font-size: 4.5rem; }
-.float-4 .game-emoji { animation-duration: 9s; animation-delay: -4s; }
+.float-4 { top: 50%; right: 8%; animation-duration: 14s; animation-delay: -2s; transform: scale(0.85); }
+.float-4 .css-shape { animation-duration: 9s; animation-delay: -4s; }
 
-.float-5 { bottom: 12%; left: 12%; animation-duration: 23s; animation-delay: -5s; font-size: 5rem; }
-.float-5 .game-emoji { animation-duration: 11s; animation-delay: -1s; }
+.float-5 { bottom: 12%; left: 12%; animation-duration: 23s; animation-delay: -5s; transform: scale(1.2); }
+.float-5 .css-shape { animation-duration: 11s; animation-delay: -1s; }
 
-.float-6 { bottom: 15%; right: 10%; animation-duration: 18s; animation-delay: -1s; font-size: 5.5rem; }
-.float-6 .game-emoji { animation-duration: 10s; animation-delay: -6s; }
+.float-6 { bottom: 15%; right: 10%; animation-duration: 18s; animation-delay: -1s; transform: scale(1.1); }
+.float-6 .css-shape { animation-duration: 10s; animation-delay: -6s; }
 
 @keyframes float-3d {
     0% { transform: perspective(800px) translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1); }
@@ -137,12 +199,6 @@ body {
     50% { filter: hue-rotate(180deg) drop-shadow(0 15px 25px rgba(0, 210, 255, 0.8)) brightness(1.3); } /* Blue */
     75% { filter: hue-rotate(120deg) drop-shadow(0 15px 25px rgba(0, 255, 128, 0.8)) brightness(1.2); } /* Green */
     100% { filter: hue-rotate(360deg) drop-shadow(0 15px 25px rgba(255, 215, 0, 0.8)) brightness(1); } /* Gold */
-}
-
-@keyframes spin-3d {
-    0% { transform: rotateY(0deg) rotateZ(5deg); }
-    50% { transform: rotateY(180deg) rotateZ(-5deg); }
-    100% { transform: rotateY(360deg) rotateZ(5deg); }
 }
 
 
