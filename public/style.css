@@ -89,112 +89,53 @@ body {
     100% { transform: translate(80px, 80px) scale(1.1); } 
 }
 
-/* Gamified Background Stickers */
-.game-sticker {
+/* Gamified 3D Emoji Wrappers */
+.game-wrapper {
     position: absolute;
     z-index: 0;
-    opacity: 0.7;
     pointer-events: none;
-    animation: spin-and-shift 15s linear infinite;
+    animation: float-3d 12s infinite ease-in-out alternate;
 }
 
-/* 3D Gamified Hearts */
-.heart {
-    background-color: #ff2a5f;
-    width: 60px;
-    height: 60px;
-    position: absolute;
-    transform: rotate(-45deg);
-    box-shadow: inset -10px -10px 20px rgba(0,0,0,0.4), 0 0 20px rgba(255, 42, 95, 0.8);
-    animation: heart-beat 1.5s infinite alternate cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.heart::before, .heart::after {
-    content: '';
-    background-color: #ff2a5f;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    position: absolute;
-    box-shadow: inset -5px -5px 15px rgba(0,0,0,0.2);
-}
-.heart::before {
-    top: -30px;
-    left: 0;
-}
-.heart::after {
-    top: 0;
-    left: 30px;
-}
-.heart-1 {
-    top: 15%; right: 10%;
-    animation-duration: 2.5s;
-}
-.heart-2 {
-    bottom: 20%; left: 5%;
-    transform: scale(0.6) rotate(-45deg);
-    animation-duration: 3s;
-    animation-delay: 1s;
+.game-emoji {
+    display: inline-block;
+    font-size: 5rem;
+    opacity: 0.9;
+    animation: color-shift 10s infinite linear;
+    filter: drop-shadow(0 15px 25px rgba(255, 215, 0, 0.6));
 }
 
-@keyframes heart-beat {
-    0% { transform: scale(0.8) rotate(-45deg); filter: hue-rotate(0deg); }
-    100% { transform: scale(1.2) rotate(-45deg); filter: hue-rotate(40deg); }
+.float-1 { top: 8%; left: 10%; animation-duration: 16s; animation-delay: 0s; font-size: 6rem; }
+.float-1 .game-emoji { animation-duration: 8s; animation-delay: 0s; }
+
+.float-2 { bottom: 12%; right: 8%; animation-duration: 19s; animation-delay: -3s; font-size: 8rem; }
+.float-2 .game-emoji { animation-duration: 12s; animation-delay: -5s; }
+
+.float-3 { top: 65%; left: 12%; animation-duration: 21s; animation-delay: -7s; font-size: 5.5rem; }
+.float-3 .game-emoji { animation-duration: 15s; animation-delay: -2s; }
+
+.float-4 { top: 18%; right: 18%; animation-duration: 14s; animation-delay: -2s; font-size: 4.5rem; }
+.float-4 .game-emoji { animation-duration: 9s; animation-delay: -4s; }
+
+.float-5 { bottom: 25%; left: 6%; animation-duration: 23s; animation-delay: -5s; font-size: 4rem; }
+.float-5 .game-emoji { animation-duration: 11s; animation-delay: -1s; }
+
+.float-6 { top: 5%; right: 45%; animation-duration: 18s; animation-delay: -1s; font-size: 3.5rem; }
+.float-6 .game-emoji { animation-duration: 10s; animation-delay: -6s; }
+
+@keyframes float-3d {
+    0% { transform: perspective(800px) translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1); }
+    33% { transform: perspective(800px) translate3d(30px, -60px, 80px) rotateX(25deg) rotateY(40deg) rotateZ(15deg) scale(1.15); }
+    66% { transform: perspective(800px) translate3d(-25px, 40px, 50px) rotateX(-20deg) rotateY(-25deg) rotateZ(-10deg) scale(0.9); }
+    100% { transform: perspective(800px) translate3d(15px, -30px, 120px) rotateX(15deg) rotateY(-35deg) rotateZ(25deg) scale(1.25); }
 }
 
-/* Crosses (Plus signs like D-pads) */
-.cross {
-    width: 40px; height: 40px;
-    color: #6e3bff;
-    filter: drop-shadow(0 0 8px currentColor);
-}
-.cross::before, .cross::after {
-    content: ''; position: absolute; background: currentColor;
-    border-radius: 4px;
-}
-.cross::before { top: 15px; left: 0; width: 40px; height: 10px; }
-.cross::after { top: 0; left: 15px; width: 10px; height: 40px; }
-.cross-1 { top: 70%; right: 15%; animation-duration: 25s; }
-.cross-2 { top: 10%; left: 15%; color: #ffb800; animation-duration: 18s; animation-direction: reverse; }
-
-/* Triangle */
-.triangle {
-    width: 0; height: 0;
-    border-left: 30px solid transparent;
-    border-right: 30px solid transparent;
-    border-bottom: 50px solid #ff3b9a;
-    filter: drop-shadow(0 0 12px #ff3b9a);
-}
-.tri-1 {
-    bottom: 10%; right: 30%;
-    animation: triangle-float 8s ease-in-out infinite alternate;
-}
-
-/* Dot Grid */
-.dots {
-    width: 100px; height: 100px;
-    background-image: radial-gradient(#00d2ff 20%, transparent 20%);
-    background-size: 20px 20px;
-    opacity: 0.3;
-    animation: pulse-shift 10s ease-in-out infinite alternate;
-}
-.dots-1 {
-    top: 45%; left: 8%;
-}
-
-@keyframes spin-and-shift {
-    0% { transform: rotate(0deg) scale(1); filter: hue-rotate(0deg) drop-shadow(0 0 10px currentColor); }
-    50% { transform: rotate(180deg) scale(1.2); filter: hue-rotate(180deg) drop-shadow(0 0 20px currentColor); }
-    100% { transform: rotate(360deg) scale(1); filter: hue-rotate(360deg) drop-shadow(0 0 10px currentColor); }
-}
-
-@keyframes triangle-float {
-    0% { transform: translateY(0) rotate(15deg); filter: hue-rotate(0deg); }
-    100% { transform: translateY(-40px) rotate(-15deg); filter: hue-rotate(90deg); }
-}
-
-@keyframes pulse-shift {
-    0% { transform: scale(1) translate(0,0); opacity: 0.2; }
-    100% { transform: scale(1.1) translate(20px, -20px); opacity: 0.5; filter: hue-rotate(90deg); }
+@keyframes color-shift {
+    0% { filter: hue-rotate(0deg) drop-shadow(0 15px 25px rgba(255, 215, 0, 0.8)) brightness(1); } /* Gold */
+    25% { filter: hue-rotate(45deg) drop-shadow(0 15px 25px rgba(255, 140, 0, 0.8)) brightness(1.2); } /* Orange */
+    50% { filter: hue-rotate(180deg) drop-shadow(0 15px 25px rgba(0, 210, 255, 0.8)) brightness(1.3); } /* Blue */
+    75% { filter: hue-rotate(120deg) drop-shadow(0 15px 25px rgba(0, 255, 128, 0.8)) brightness(1.2); } /* Green */
+    100% { filter: hue-rotate(360deg) drop-shadow(0 15px 25px rgba(255, 215, 0, 0.8)) brightness(1); } /* Gold */
 }
 
 
