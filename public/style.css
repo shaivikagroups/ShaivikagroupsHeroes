@@ -105,22 +105,23 @@ body {
     filter: drop-shadow(0 15px 25px rgba(255, 215, 0, 0.6));
 }
 
-.float-1 { top: 8%; left: 10%; animation-duration: 16s; animation-delay: 0s; font-size: 6rem; }
+/* Perfectly Aligned to avoid overlapping and frame the form */
+.float-1 { top: 12%; left: 6%; animation-duration: 16s; animation-delay: 0s; font-size: 5.5rem; }
 .float-1 .game-emoji { animation-duration: 8s; animation-delay: 0s; }
 
-.float-2 { bottom: 12%; right: 8%; animation-duration: 19s; animation-delay: -3s; font-size: 8rem; }
+.float-2 { top: 15%; right: 6%; animation-duration: 19s; animation-delay: -3s; font-size: 5rem; }
 .float-2 .game-emoji { animation-duration: 12s; animation-delay: -5s; }
 
-.float-3 { top: 65%; left: 12%; animation-duration: 21s; animation-delay: -7s; font-size: 5.5rem; }
+.float-3 { top: 45%; left: 8%; animation-duration: 21s; animation-delay: -7s; font-size: 4.5rem; }
 .float-3 .game-emoji { animation-duration: 15s; animation-delay: -2s; }
 
-.float-4 { top: 18%; right: 18%; animation-duration: 14s; animation-delay: -2s; font-size: 4.5rem; }
+.float-4 { top: 50%; right: 8%; animation-duration: 14s; animation-delay: -2s; font-size: 4.5rem; }
 .float-4 .game-emoji { animation-duration: 9s; animation-delay: -4s; }
 
-.float-5 { bottom: 25%; left: 6%; animation-duration: 23s; animation-delay: -5s; font-size: 4rem; }
+.float-5 { bottom: 12%; left: 12%; animation-duration: 23s; animation-delay: -5s; font-size: 5rem; }
 .float-5 .game-emoji { animation-duration: 11s; animation-delay: -1s; }
 
-.float-6 { top: 5%; right: 45%; animation-duration: 18s; animation-delay: -1s; font-size: 3.5rem; }
+.float-6 { bottom: 15%; right: 10%; animation-duration: 18s; animation-delay: -1s; font-size: 5.5rem; }
 .float-6 .game-emoji { animation-duration: 10s; animation-delay: -6s; }
 
 @keyframes float-3d {
