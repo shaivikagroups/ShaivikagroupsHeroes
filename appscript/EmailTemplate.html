@@ -4,136 +4,343 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Welcome to Shaivika</title>
+    <title>Welcome to Shaivika – Your Portfolio is Ready!</title>
     <style type="text/css">
-        /* Reset */
+        /* === RESET === */
         body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
-        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
-        body { margin: 0; padding: 0; width: 100% !important; background-color: #F4F7FE; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
-        
-        /* Typography */
-        h1, h2, h3, p { margin: 0; padding: 0; }
-        .text-center { text-align: center; }
-        .primary-text { color: #5A2EDB; } /* Electric Purple */
-        .secondary-text { color: #0ea5e9; } /* Bright Blue */
-        
-        /* Layout */
-        .email-container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(90, 46, 219, 0.1); margin-top: 20px; margin-bottom: 20px; }
-        .content-padding { padding: 40px; }
-        
-        /* Header / Logo */
-        .header { background: linear-gradient(135deg, #ffffff 0%, #F0EBFF 100%); text-align: center; padding: 30px 20px; border-bottom: 3px solid #0ea5e9; }
-        .logo-img { width: 150px; max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        
-        /* 3D-Like Hero Banner */
-        .hero-banner { 
-            background: linear-gradient(135deg, #5A2EDB 0%, #8B5CF6 100%); 
-            padding: 40px 20px; 
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-collapse: collapse; }
+        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; display: block; }
+        body { margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #FFF8F0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+        h1, h2, h3, h4, p { margin: 0; padding: 0; }
+
+        /* === MAIN WRAPPER === */
+        .outer-wrapper { width: 100%; background-color: #FFF8F0; }
+        .email-container { max-width: 620px; margin: 0 auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(255, 126, 0, 0.12); }
+
+        /* === HEADER === */
+        .header-cell { 
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFFFFF 50%, #FFF9F0 100%); 
             text-align: center; 
-            color: #ffffff; 
-            margin: 20px 40px;
-            border-radius: 16px;
-            border-bottom: 5px solid #431EAB; /* 3D bottom edge */
-            border-right: 3px solid #431EAB; /* 3D right edge */
+            padding: 30px 40px 20px 40px; 
+            border-bottom: 4px solid #FF7E00; 
         }
-        .hero-banner h1 { font-size: 28px; font-weight: 700; margin-bottom: 10px; letter-spacing: 0.5px; }
-        .hero-banner p { font-size: 16px; opacity: 0.9; }
+        .logo-img { width: 180px; max-width: 100%; height: auto; }
 
-        /* Main Content */
-        .main-content { font-size: 16px; line-height: 1.6; color: #333333; }
-        .highlight-box {
-            background-color: #e0f2fe;
-            border-left: 4px solid #0ea5e9;
-            padding: 15px 20px;
-            border-radius: 0 8px 8px 0;
-            margin: 25px 0;
-            font-size: 15px;
+        /* === HERO BANNER === */
+        .hero-cell { 
+            background: linear-gradient(135deg, #FF7E00 0%, #FFB300 50%, #FF6B35 100%); 
+            padding: 45px 40px; 
+            text-align: center; 
         }
-
-        /* Call to Action Button */
-        .button-wrapper { text-align: center; margin: 35px 0; }
-        .btn {
-            display: inline-block;
-            background: linear-gradient(135deg, #FF3B9A 0%, #FF65B2 100%);
-            color: #ffffff !important;
-            text-decoration: none;
-            padding: 16px 32px;
-            border-radius: 50px;
-            font-size: 18px;
-            font-weight: bold;
-            border-bottom: 4px solid #D61B78; /* 3D bottom edge */
-            box-shadow: 0 8px 15px rgba(255, 59, 154, 0.3);
+        .hero-emoji { font-size: 48px; line-height: 1; display: block; margin-bottom: 14px; }
+        .hero-title { font-size: 30px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; line-height: 1.2; margin-bottom: 10px; }
+        .hero-sub { font-size: 16px; color: rgba(255,255,255,0.9); font-weight: 400; line-height: 1.5; }
+        .hero-role-badge { 
+            display: inline-block; 
+            background: rgba(255,255,255,0.2); 
+            border: 2px solid rgba(255,255,255,0.5); 
+            color: #fff; 
+            font-size: 14px; 
+            font-weight: 700; 
+            padding: 6px 18px; 
+            border-radius: 50px; 
+            margin-top: 14px; 
+            letter-spacing: 1px; 
+            text-transform: uppercase; 
         }
 
-        /* Footer */
-        .footer { background-color: #FAFAFA; padding: 30px; text-align: center; font-size: 13px; color: #888888; border-top: 1px solid #EEEEEE; }
-        
-        /* Responsive */
-        @media screen and (max-width: 600px) {
-            .email-container { width: 100% !important; border-radius: 0 !important; margin-top: 0; }
-            .content-padding { padding: 20px !important; }
-            .hero-banner { margin: 10px 20px; }
+        /* === SECTION CELLS === */
+        .section-cell { padding: 36px 40px; }
+        .section-alt { background-color: #FFFAF5; padding: 36px 40px; }
+        .divider { border: 0; border-top: 2px dashed #FFE0B2; margin: 0; }
+
+        /* === PORTFOLIO SECTION === */
+        .portfolio-box { 
+            background: linear-gradient(135deg, #FFF3E0, #FFF8F0); 
+            border: 2px solid #FFB74D; 
+            border-radius: 16px; 
+            padding: 28px; 
+            text-align: center; 
+        }
+        .portfolio-label { font-size: 12px; font-weight: 700; color: #FF7E00; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+        .portfolio-title { font-size: 20px; font-weight: 800; color: #1A1A1A; margin-bottom: 6px; }
+        .portfolio-url { 
+            font-size: 14px; 
+            color: #FF7E00; 
+            word-break: break-all; 
+            font-family: 'Courier New', monospace; 
+            background: #FFF; 
+            border: 1px solid #FFE0B2; 
+            border-radius: 8px; 
+            padding: 10px 14px; 
+            margin: 12px 0 20px 0; 
+        }
+
+        /* === CTA BUTTON === */
+        .btn-view { 
+            display: inline-block; 
+            background: linear-gradient(135deg, #FF7E00, #FF6B35); 
+            color: #ffffff !important; 
+            text-decoration: none; 
+            padding: 16px 36px; 
+            border-radius: 50px; 
+            font-size: 17px; 
+            font-weight: 800; 
+            letter-spacing: 0.5px; 
+            border-bottom: 4px solid #C85000; 
+            box-shadow: 0 8px 20px rgba(255, 126, 0, 0.4); 
+        }
+        .btn-copy { 
+            display: inline-block; 
+            background: #ffffff; 
+            color: #FF7E00 !important; 
+            text-decoration: none; 
+            padding: 14px 28px; 
+            border-radius: 50px; 
+            font-size: 15px; 
+            font-weight: 700; 
+            border: 2px solid #FF7E00; 
+            margin-top: 12px; 
+        }
+
+        /* === ONBOARDING STEPS === */
+        .section-heading { font-size: 22px; font-weight: 800; color: #1A1A1A; margin-bottom: 6px; }
+        .section-sub { font-size: 14px; color: #888888; margin-bottom: 24px; }
+
+        .step-row { margin-bottom: 18px; }
+        .step-icon-cell { 
+            width: 48px; 
+            height: 48px; 
+            border-radius: 14px; 
+            text-align: center; 
+            vertical-align: top; 
+            font-size: 22px; 
+            line-height: 48px; 
+        }
+        .step-text-cell { padding-left: 16px; vertical-align: top; }
+        .step-title { font-size: 16px; font-weight: 700; color: #1A1A1A; margin-bottom: 3px; }
+        .step-desc { font-size: 14px; color: #666666; line-height: 1.5; }
+
+        /* Step accent colors */
+        .step-1 { background: #FFF3E0; }
+        .step-2 { background: #E3F2FD; }
+        .step-3 { background: #E8F5E9; }
+        .step-4 { background: #FCE4EC; }
+        .step-5 { background: #EDE7F6; }
+
+        /* === CHECKLIST === */
+        .checklist-item { 
+            background: #FFFAF5; 
+            border: 1px solid #FFE0B2; 
+            border-radius: 10px; 
+            padding: 12px 16px; 
+            margin-bottom: 10px; 
+            font-size: 14px; 
+            color: #333; 
+        }
+        .check-icon { color: #FF7E00; font-weight: 900; margin-right: 8px; }
+
+        /* === QUOTE BANNER === */
+        .quote-cell { 
+            background: linear-gradient(135deg, #1565C0, #1E88E5); 
+            padding: 30px 40px; 
+            text-align: center; 
+        }
+        .quote-text { font-size: 18px; font-weight: 700; color: #ffffff; line-height: 1.6; font-style: italic; }
+        .quote-author { font-size: 13px; color: rgba(255,255,255,0.8); margin-top: 10px; }
+
+        /* === HELP SECTION === */
+        .help-box { 
+            background: #F1F8E9; 
+            border-radius: 12px; 
+            padding: 20px 24px; 
+            border-left: 5px solid #66BB6A; 
+        }
+        .help-title { font-size: 15px; font-weight: 700; color: #2E7D32; margin-bottom: 6px; }
+        .help-text { font-size: 14px; color: #558B2F; line-height: 1.6; }
+
+        /* === FOOTER === */
+        .footer-cell { 
+            background: linear-gradient(135deg, #FFF3E0, #FFFFFF); 
+            padding: 28px 40px; 
+            text-align: center; 
+            border-top: 3px solid #FFE0B2; 
+        }
+        .footer-logo { width: 110px; height: auto; margin-bottom: 12px; }
+        .footer-tagline { font-size: 14px; font-weight: 700; color: #FF7E00; margin-bottom: 8px; }
+        .footer-legal { font-size: 12px; color: #BBBBBB; line-height: 1.6; }
+        .footer-link { color: #FF7E00 !important; text-decoration: none; font-weight: 600; }
+
+        /* === MOBILE RESPONSIVE === */
+        @media screen and (max-width: 640px) {
+            .email-container { width: 100% !important; border-radius: 0 !important; }
+            .hero-cell, .section-cell, .section-alt, .footer-cell, .quote-cell { padding: 28px 20px !important; }
+            .header-cell { padding: 20px !important; }
+            .hero-title { font-size: 24px !important; }
+            .btn-view, .btn-copy { display: block !important; width: auto !important; text-align: center !important; }
+            .step-icon-cell { width: 40px !important; height: 40px !important; line-height: 40px !important; font-size: 18px !important; }
         }
     </style>
 </head>
-<body width="100%" style="margin: 0; padding: 0 !important; mso-line-height-rule: exactly; background-color: #F4F7FE;">
-    <center style="width: 100%; background-color: #F4F7FE;">
-        <!-- Email Container -->
-        <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="margin: auto;" class="email-container">
-            
-            <!-- Header -->
-            <tr>
-                <td class="header">
-                    <img src="https://res.cloudinary.com/dzfntkzce/image/upload/v1787319258/Shaivika_Groups_Logo999_rpytmm.jpg" alt="Shaivika Logo" class="logo-img">
-                </td>
-            </tr>
+<body>
+<div class="outer-wrapper">
+<center>
+<table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="620" class="email-container">
 
-            <!-- Hero Banner with 3D Effect -->
-            <tr>
-                <td>
-                    <div class="hero-banner">
-                        <h1>Welcome Aboard, <?= fullName ?>! 🎉</h1>
-                        <p>Your digital identity is now officially live.</p>
-                    </div>
-                </td>
-            </tr>
+    <!-- ====== HEADER: LOGO ====== -->
+    <tr>
+        <td class="header-cell">
+            <img src="https://res.cloudinary.com/dzfntkzce/image/upload/v1787319258/Shaivika_Groups_Logo999_rpytmm.jpg" alt="Shaivika Groups Logo" class="logo-img">
+        </td>
+    </tr>
 
-            <!-- Body Content -->
-            <tr>
-                <td class="content-padding main-content">
-                    <p>Hi <strong><?= fullName ?></strong>,</p>
-                    <br>
-                    <p>We are thrilled to officially welcome you to the Shaivika team as our newest <strong class="secondary-text"><?= role ?></strong>. Your employee onboarding information has been securely saved and processed.</p>
-                    
-                    <div class="highlight-box">
-                        <strong>Exciting News:</strong> Your professional MNC-level portfolio has been automatically generated using the details you provided.
-                    </div>
+    <!-- ====== HERO: WELCOME ====== -->
+    <tr>
+        <td class="hero-cell">
+            <span class="hero-emoji">🎊</span>
+            <h1 class="hero-title">Welcome Aboard, <?= fullName ?>!</h1>
+            <p class="hero-sub">You are now officially part of the Shaivika family.</p>
+            <span class="hero-role-badge">✦ <?= role ?></span>
+        </td>
+    </tr>
 
-                    <p>You can view, share, and link your stunning new portfolio to showcase your projects and skills to the world.</p>
+    <!-- ====== SECTION 1: PORTFOLIO LAUNCH ====== -->
+    <tr>
+        <td class="section-cell">
+            <h2 class="section-heading">🚀 Your Portfolio is Live!</h2>
+            <p class="section-sub">Your personal professional portfolio has been automatically generated and published.</p>
+            <div class="portfolio-box">
+                <p class="portfolio-label">🌐 Your Unique Portfolio URL</p>
+                <p class="portfolio-title"><?= fullName ?></p>
+                <p class="portfolio-url"><?= portfolioUrl ?></p>
+                <a href="<?= portfolioUrl ?>" class="btn-view">View My Portfolio &rarr;</a>
+                <br>
+                <a href="<?= portfolioUrl ?>" class="btn-copy">🔗 Copy & Share Link</a>
+            </div>
+        </td>
+    </tr>
 
-                    <!-- CTA Button -->
-                    <div class="button-wrapper">
-                        <a href="<?= portfolioUrl ?>" class="btn">View My Portfolio &rarr;</a>
-                    </div>
+    <tr><td><hr class="divider"></td></tr>
 
-                    <p>If you need to update any information or have questions about your onboarding process, please don't hesitate to reach out to our HR department.</p>
-                    <br>
-                    <p>Once again, welcome to the team. Let's build something wonderful together!</p>
-                    <br>
-                    <p>Best regards,<br><strong>The Shaivika Leadership Team</strong></p>
-                </td>
-            </tr>
+    <!-- ====== SECTION 2: ONBOARDING GUIDE ====== -->
+    <tr>
+        <td class="section-alt">
+            <h2 class="section-heading">📋 Your Onboarding Checklist</h2>
+            <p class="section-sub">Here is what happens next as you get started at Shaivika.</p>
 
-            <!-- Footer -->
-            <tr>
-                <td class="footer">
-                    <p>&copy; 2026 Shaivika Groups. All Rights Reserved.</p>
-                    <p>This is an automated onboarding email. Please do not reply directly to this address.</p>
-                </td>
-            </tr>
-            
-        </table>
-    </center>
+            <!-- Step 1 -->
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" class="step-row" style="margin-bottom:18px;">
+                <tr>
+                    <td class="step-icon-cell step-1" style="width:48px;height:48px;border-radius:14px;text-align:center;vertical-align:top;font-size:22px;line-height:48px;">🏢</td>
+                    <td class="step-text-cell" style="padding-left:16px;vertical-align:top;">
+                        <p class="step-title">Day 1: Company Orientation</p>
+                        <p class="step-desc">Your HR team will guide you through our culture, vision, values, and work style. Be ready to meet your team and manager.</p>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Step 2 -->
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:18px;">
+                <tr>
+                    <td class="step-icon-cell step-2" style="width:48px;height:48px;border-radius:14px;text-align:center;vertical-align:top;font-size:22px;line-height:48px;">💻</td>
+                    <td class="step-text-cell" style="padding-left:16px;vertical-align:top;">
+                        <p class="step-title">System & Tools Access</p>
+                        <p class="step-desc">You will receive login credentials for all company tools, project management platforms, and internal communication channels.</p>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Step 3 -->
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:18px;">
+                <tr>
+                    <td class="step-icon-cell step-3" style="width:48px;height:48px;border-radius:14px;text-align:center;vertical-align:top;font-size:22px;line-height:48px;">🤝</td>
+                    <td class="step-text-cell" style="padding-left:16px;vertical-align:top;">
+                        <p class="step-title">Meet Your Team</p>
+                        <p class="step-desc">A structured team introduction will be arranged in your first week so you get comfortable with your colleagues and collaborators.</p>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Step 4 -->
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:18px;">
+                <tr>
+                    <td class="step-icon-cell step-4" style="width:48px;height:48px;border-radius:14px;text-align:center;vertical-align:top;font-size:22px;line-height:48px;">📈</td>
+                    <td class="step-text-cell" style="padding-left:16px;vertical-align:top;">
+                        <p class="step-title">Your First Project</p>
+                        <p class="step-desc">Your team lead will assign you an initial project to help you get familiar with our workflow, codebase, and delivery standards.</p>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Step 5 -->
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:0;">
+                <tr>
+                    <td class="step-icon-cell step-5" style="width:48px;height:48px;border-radius:14px;text-align:center;vertical-align:top;font-size:22px;line-height:48px;">🌟</td>
+                    <td class="step-text-cell" style="padding-left:16px;vertical-align:top;">
+                        <p class="step-title">Share Your Portfolio</p>
+                        <p class="step-desc">Your professional portfolio page is live! Add it to your LinkedIn profile, email signature, and business contacts to showcase your work.</p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <tr><td><hr class="divider"></td></tr>
+
+    <!-- ====== SECTION 3: QUICK CHECKLIST ====== -->
+    <tr>
+        <td class="section-cell">
+            <h2 class="section-heading">✅ What We Have Set Up For You</h2>
+            <p class="section-sub" style="margin-bottom:20px;">Everything is already done — no action needed from your side!</p>
+            <div class="checklist-item"><span class="check-icon">★</span> Professional Portfolio Page — Published & Live</div>
+            <div class="checklist-item"><span class="check-icon">★</span> Unique Personal URL — Shareable on Social Media</div>
+            <div class="checklist-item"><span class="check-icon">★</span> Automatic Google SEO — Your name is indexed!</div>
+            <div class="checklist-item"><span class="check-icon">★</span> Open Graph Tags — Rich preview when shared on WhatsApp & LinkedIn</div>
+            <div class="checklist-item"><span class="check-icon">★</span> Your Resume — Securely stored and linked in your portfolio</div>
+            <div class="checklist-item"><span class="check-icon">★</span> Profile Photo — Uploaded and displayed professionally</div>
+        </td>
+    </tr>
+
+    <!-- ====== QUOTE BANNER ====== -->
+    <tr>
+        <td class="quote-cell">
+            <p class="quote-text">"Great things in business are never done by one person.<br>They're done by a team of people."</p>
+            <p class="quote-author">— Steve Jobs &nbsp;|&nbsp; And we're glad you are on ours. 💙</p>
+        </td>
+    </tr>
+
+    <!-- ====== SECTION 4: HELP & CONTACT ====== -->
+    <tr>
+        <td class="section-cell">
+            <div class="help-box">
+                <p class="help-title">💬 Need Help? We've Got You!</p>
+                <p class="help-text">
+                    If you have any questions about your portfolio, onboarding, or account setup — reach out to our HR team anytime. We're here to make your journey smooth from day one.
+                    <br><br>
+                    <strong>HR Team, Shaivika Groups</strong><br>
+                    <a href="https://shaivikagroupsheros.netlify.app" class="footer-link">shaivikagroupsheros.netlify.app</a>
+                </p>
+            </div>
+        </td>
+    </tr>
+
+    <!-- ====== FOOTER ====== -->
+    <tr>
+        <td class="footer-cell">
+            <img src="https://res.cloudinary.com/dzfntkzce/image/upload/v1787319258/Shaivika_Groups_Logo999_rpytmm.jpg" alt="Shaivika" class="footer-logo" style="margin:0 auto 12px auto;">
+            <p class="footer-tagline">Building People. Building Technology.</p>
+            <p class="footer-legal">
+                &copy; 2026 Shaivika Groups. All Rights Reserved.<br>
+                <a href="https://shaivikagroupsheros.netlify.app" class="footer-link">shaivikagroupsheros.netlify.app</a>
+                <br><br>
+                This is an automated onboarding email sent upon successful employee registration.<br>
+                Please do not reply directly to this message.
+            </p>
+        </td>
+    </tr>
+
+</table>
+</center>
+</div>
 </body>
 </html>
