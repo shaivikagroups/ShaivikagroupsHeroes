@@ -262,11 +262,35 @@ app.get('/:slug', (req, res) => {
     if (req.path.startsWith('/api/')) return res.status(404).end();
     
     const filePath = path.join(__dirname, 'public', 'portfolio.html');
-    if (fs.existsSync(filePath)) {
-        res.sendFile(filePath);
-    } else {
-        res.status(404).send("Portfolio template not found");
+    if (!fs.existsSync(filePath)) {
+        return res.status(404).send("Portfolio template not found");
     }
+
+    let html = fs.readFileSync(filePath, 'utf-8');
+    
+    // Inject SEO if employee exists
+    const slug = req.params.slug;
+    const employees = getEmployees();
+    const employee = employees.find(e => e.slug === slug);
+
+    if (employee) {
+        const title = `${employee.fullName} | ${employee.role} | Shaivika`;
+        const description = employee.summary ? employee.summary.substring(0, 150) + '...' : `View the professional portfolio of ${employee.fullName}.`;
+        
+        html = html.replace('<title>Employee Portfolio | Shaivika</title>', `<title>${title}</title>`);
+        html = html.replace('content="Professional portfolio at Shaivika."', `content="${description}"`);
+        html = html.replace('content="Employee Portfolio | Shaivika"', `content="${title}"`);
+        html = html.replace('content="View professional portfolio."', `content="${description}"`);
+        
+        if (employee.profilePhotoUrl) {
+            html = html.replace('id="og-image" content=""', `id="og-image" content="${employee.profilePhotoUrl}"`);
+        }
+        if (employee.portfolioUrl) {
+            html = html.replace('id="og-url" content=""', `id="og-url" content="${employee.portfolioUrl}"`);
+        }
+    }
+
+    res.send(html);
 });
 
 // Start Server
@@ -276,5 +300,5 @@ if (require.main === module) {
   });
 }
 
-// Export for Vercel
+// Export for Vercel / Netlify
 module.exports = app;
