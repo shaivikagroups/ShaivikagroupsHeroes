@@ -73,22 +73,41 @@ const uploadToCloudinary = (buffer, filename, folder, resource_type = 'raw') => 
 };
 
 // Data Storage (Local JSON Cache)
-const dataFilePath = process.env.VERCEL ? '/tmp/employees.json' : path.join(__dirname, 'data', 'employees.json');
-if (!fs.existsSync(path.dirname(dataFilePath))) {
-    fs.mkdirSync(path.dirname(dataFilePath), { recursive: true });
-}
-if (!fs.existsSync(dataFilePath)) {
-    fs.writeFileSync(dataFilePath, JSON.stringify([]));
+let dataFilePath = path.join(__dirname, 'data', 'employees.json');
+try {
+    if (process.env.VERCEL) {
+        dataFilePath = '/tmp/employees.json';
+    } else {
+        if (!fs.existsSync(path.dirname(dataFilePath))) {
+            fs.mkdirSync(path.dirname(dataFilePath), { recursive: true });
+        }
+    }
+    if (!fs.existsSync(dataFilePath)) {
+        fs.writeFileSync(dataFilePath, JSON.stringify([]));
+    }
+} catch (err) {
+    console.error("Failed to initialize cache file:", err);
 }
 
 function getEmployees() {
-    return JSON.parse(fs.readFileSync(dataFilePath, 'utf8'));
+    try {
+        if (fs.existsSync(dataFilePath)) {
+            return JSON.parse(fs.readFileSync(dataFilePath, 'utf8'));
+        }
+    } catch(e) {
+        console.error("Error reading employees:", e);
+    }
+    return [];
 }
 
 function saveEmployee(employee) {
-    const employees = getEmployees();
-    employees.push(employee);
-    fs.writeFileSync(dataFilePath, JSON.stringify(employees, null, 2));
+    try {
+        const employees = getEmployees();
+        employees.push(employee);
+        fs.writeFileSync(dataFilePath, JSON.stringify(employees, null, 2));
+    } catch(e) {
+        console.error("Error saving employee:", e);
+    }
 }
 
 function generateUniqueSlug(fullName) {
