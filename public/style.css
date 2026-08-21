@@ -86,53 +86,95 @@ body {
 
 @keyframes float { 
     0% { transform: translate(0, 0) scale(1); } 
+    100% { transform: translate(80px, 80px) scale(1.1); } 
 }
 
-/* Gamified Stickers */
-.sticker {
+/* Gamified Background Stickers */
+.game-sticker {
     position: absolute;
     z-index: 0;
-    opacity: 0.65;
-    animation: floatSticker 12s infinite ease-in-out alternate;
-    user-select: none;
+    opacity: 0.7;
     pointer-events: none;
+    animation: spin-and-shift 15s linear infinite;
 }
-.sticker-star {
-    font-size: 2rem;
-    color: var(--gold);
-    text-shadow: 0 0 10px rgba(250, 204, 21, 0.4);
-}
-.sticker-plus {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: var(--blue);
-    text-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
-}
-.sticker-circle {
-    width: 24px;
-    height: 24px;
-    border: 4px solid var(--accent);
+
+/* Rings */
+.ring {
     border-radius: 50%;
-    box-shadow: 0 0 10px rgba(255, 59, 154, 0.4);
+    border: 8px solid;
+    box-sizing: border-box;
+    filter: drop-shadow(0 0 10px currentColor);
 }
-.sticker-triangle {
-    font-size: 1.8rem;
-    color: var(--success);
-    text-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+.ring-1 {
+    width: 120px; height: 120px;
+    border-color: #ff3b9a;
+    top: 15%; right: 10%;
+    animation-duration: 20s;
+}
+.ring-2 {
+    width: 60px; height: 60px;
+    border-color: #00d2ff;
+    bottom: 20%; left: 5%;
+    animation-direction: reverse;
+    animation-duration: 12s;
 }
 
-.s-1 { top: 15%; left: 10%; animation-duration: 15s; font-size: 2.5rem; transform: rotate(15deg); }
-.s-2 { top: 25%; right: 15%; animation-duration: 18s; animation-delay: -2s; transform: rotate(45deg); }
-.s-3 { bottom: 20%; left: 20%; animation-duration: 20s; animation-delay: -5s; }
-.s-4 { bottom: 15%; right: 10%; animation-duration: 14s; font-size: 2rem; animation-delay: -7s; transform: rotate(-20deg); }
-.s-5 { top: 50%; left: 5%; animation-duration: 16s; animation-delay: -3s; transform: rotate(10deg); }
-.s-6 { top: 60%; right: 5%; animation-duration: 19s; animation-delay: -8s; transform: rotate(180deg); }
-
-@keyframes floatSticker {
-    0% { transform: translateY(0) rotate(0deg) scale(1); }
-    50% { transform: translateY(-40px) rotate(20deg) scale(1.1); }
-    100% { transform: translateY(20px) rotate(-20deg) scale(0.9); }
+/* Crosses (Plus signs like D-pads) */
+.cross {
+    width: 40px; height: 40px;
+    color: #6e3bff;
+    filter: drop-shadow(0 0 8px currentColor);
 }
+.cross::before, .cross::after {
+    content: ''; position: absolute; background: currentColor;
+    border-radius: 4px;
+}
+.cross::before { top: 15px; left: 0; width: 40px; height: 10px; }
+.cross::after { top: 0; left: 15px; width: 10px; height: 40px; }
+.cross-1 { top: 70%; right: 15%; animation-duration: 25s; }
+.cross-2 { top: 10%; left: 15%; color: #ffb800; animation-duration: 18s; animation-direction: reverse; }
+
+/* Triangle */
+.triangle {
+    width: 0; height: 0;
+    border-left: 30px solid transparent;
+    border-right: 30px solid transparent;
+    border-bottom: 50px solid #ff3b9a;
+    filter: drop-shadow(0 0 12px #ff3b9a);
+}
+.tri-1 {
+    bottom: 10%; right: 30%;
+    animation: triangle-float 8s ease-in-out infinite alternate;
+}
+
+/* Dot Grid */
+.dots {
+    width: 100px; height: 100px;
+    background-image: radial-gradient(#00d2ff 20%, transparent 20%);
+    background-size: 20px 20px;
+    opacity: 0.3;
+    animation: pulse-shift 10s ease-in-out infinite alternate;
+}
+.dots-1 {
+    top: 45%; left: 8%;
+}
+
+@keyframes spin-and-shift {
+    0% { transform: rotate(0deg) scale(1); filter: hue-rotate(0deg) drop-shadow(0 0 10px currentColor); }
+    50% { transform: rotate(180deg) scale(1.2); filter: hue-rotate(180deg) drop-shadow(0 0 20px currentColor); }
+    100% { transform: rotate(360deg) scale(1); filter: hue-rotate(360deg) drop-shadow(0 0 10px currentColor); }
+}
+
+@keyframes triangle-float {
+    0% { transform: translateY(0) rotate(15deg); filter: hue-rotate(0deg); }
+    100% { transform: translateY(-40px) rotate(-15deg); filter: hue-rotate(90deg); }
+}
+
+@keyframes pulse-shift {
+    0% { transform: scale(1) translate(0,0); opacity: 0.2; }
+    100% { transform: scale(1.1) translate(20px, -20px); opacity: 0.5; filter: hue-rotate(90deg); }
+}
+
 
 /* Container */
 .container { width: 100%; max-width: 950px; margin: 0 auto; z-index: 1; position: relative; }
