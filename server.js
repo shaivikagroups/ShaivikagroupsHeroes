@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
 const { v2: cloudinary } = require('cloudinary');
+const { generatePortfolioHTML, generate404HTML } = require('./lib/portfolioRenderer');
 
 const fs = require('fs');
 const path = require('path');
@@ -203,8 +204,9 @@ app.post('/api/submit', upload.fields([
 
     // 3. Generate Slug and Portfolio URL
     const slug = generateUniqueSlug(fullName);
-    const host = req.get('host');
-    const portfolioUrl = `${req.protocol}://${host}/${slug}`;
+    const proto   = req.headers['x-forwarded-proto'] || req.protocol;
+    const host    = req.headers['x-forwarded-host']  || req.get('host');
+    const portfolioUrl = `${proto}://${host}/${slug}`;
 
     // 4. Save to Local Cache (Excluding private device data for rendering safety)
     let parsedProjects = [];
@@ -275,54 +277,86 @@ app.post('/api/submit', upload.fields([
   }
 });
 
-// Clean URL Route (Fallback for /:slug) - MUST come after all API routes
+// ── Sitemap ─────────────────────────────────────────────────────────────────
+app.get('/sitemap.xml', (req, res) => {
+    const employees = getEmployees();
+    const proto = req.headers['x-forwarded-proto'] || req.protocol;
+    const host  = req.headers['x-forwarded-host']  || req.get('host');
+    const baseUrl = `${proto}://${host}`;
+
+    const urls = employees
+        .filter(e => e.slug)
+        .map(e => {
+            const loc = `${baseUrl}/${e.slug}`;
+            const lastmod = e.submittedAt
+                ? new Date(e.submittedAt).toISOString().split('T')[0]
+                : new Date().toISOString().split('T')[0];
+            return `  <url>
+    <loc>${loc}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+        })
+        .join('\n');
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${baseUrl}/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+${urls}
+</urlset>`;
+
+    res.set('Content-Type', 'application/xml; charset=utf-8');
+    res.set('Cache-Control', 'public, max-age=3600');
+    res.send(xml);
+});
+
+// ── Robots.txt ───────────────────────────────────────────────────────────────
+app.get('/robots.txt', (req, res) => {
+    const proto = req.headers['x-forwarded-proto'] || req.protocol;
+    const host  = req.headers['x-forwarded-host']  || req.get('host');
+    const baseUrl = `${proto}://${host}`;
+    res.set('Content-Type', 'text/plain; charset=utf-8');
+    res.send(`User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${baseUrl}/sitemap.xml\n`);
+});
+
+// ── Clean URL Portfolio Route ─────────────────────────────────────────────────
 app.get('/:slug', (req, res) => {
     const slug = req.params.slug;
-    
-    // Skip requests for static file extensions — let express.static handle them
-    if (/\.[a-zA-Z0-9]{1,5}$/.test(slug)) {
+
+    // Skip static file extensions — express.static handles them
+    if (/\.[a-zA-Z0-9]{1,6}$/.test(slug)) {
         return res.status(404).end();
     }
 
-    const filePath = path.join(__dirname, 'public', 'portfolio.html');
-    if (!fs.existsSync(filePath)) {
-        return res.status(404).send('Portfolio template not found');
+    const employees  = getEmployees();
+    const employee   = employees.find(e => e.slug === slug);
+
+    if (!employee) {
+        return res.status(404).send(generate404HTML(slug));
     }
 
-    let html = fs.readFileSync(filePath, 'utf-8');
-    
-    // Inject SEO metadata if employee exists
-    const employees = getEmployees();
-    const employee = employees.find(e => e.slug === slug);
+    const proto      = req.headers['x-forwarded-proto'] || req.protocol;
+    const host       = req.headers['x-forwarded-host']  || req.get('host');
+    const baseUrl    = `${proto}://${host}`;
+    const portfolioUrl = `${baseUrl}/${employee.slug}`;
 
-    if (employee) {
-        const title = `${employee.fullName} | ${employee.role} | Shaivika`;
-        const description = employee.summary 
-            ? employee.summary.substring(0, 150) + '...' 
-            : `View the professional portfolio of ${employee.fullName}.`;
-        
-        html = html.replace('<title>Employee Portfolio | Shaivika</title>', `<title>${title}</title>`);
-        html = html.replace('content="Professional portfolio at Shaivika."', `content="${description}"`);
-        html = html.replace('content="Employee Portfolio | Shaivika"', `content="${title}"`);
-        html = html.replace('content="View professional portfolio."', `content="${description}"`);
-        
-        if (employee.profilePhotoUrl) {
-            html = html.replace('id="og-image" content=""', `id="og-image" content="${employee.profilePhotoUrl}"`);
-        }
-        if (employee.portfolioUrl) {
-            html = html.replace('id="og-url" content=""', `id="og-url" content="${employee.portfolioUrl}"`);
-        }
-    }
-
+    const html = generatePortfolioHTML(employee, portfolioUrl);
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    res.set('Cache-Control', 'public, max-age=600');
     res.send(html);
 });
 
-// Start Server
+// ── Start Server ─────────────────────────────────────────────────────────────
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
   });
 }
 
-// Export for Vercel / Netlify
+// Export for Netlify / Vercel
 module.exports = app;

@@ -5,23 +5,31 @@
 
 [functions]
   node_bundler = "esbuild"
-  included_files = ["data/**"]
+  included_files = ["data/**", "lib/**"]
 
-# API calls go to the serverless function
+# API calls → serverless function
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api/api/:splat"
   status = 200
   force = true
 
-# Ensure root always serves the form (index.html)
+# Sitemap & Robots → serverless function (dynamic)
 [[redirects]]
-  from = "/"
-  to = "/index.html"
+  from = "/sitemap.xml"
+  to = "/.netlify/functions/api/sitemap.xml"
   status = 200
+  force = true
 
-# Clean portfolio URLs: serve portfolio.html statically (JS reads slug from path)
+[[redirects]]
+  from = "/robots.txt"
+  to = "/.netlify/functions/api/robots.txt"
+  status = 200
+  force = true
+
+# Clean portfolio URLs → SSR via serverless function
+# Static files in /public are served natively FIRST (no force = true means Netlify checks static first)
 [[redirects]]
   from = "/*"
-  to = "/portfolio.html"
+  to = "/.netlify/functions/api/:splat"
   status = 200
