@@ -66,3 +66,67 @@ function sendWelcomeEmail(data) {
     name: "Shaivika Employee Onboarding"
   });
 }
+
+function doGet(e) {
+  try {
+    const slug = e.parameter.slug;
+    if (!slug) {
+      return ContentService.createTextOutput(JSON.stringify({ "status": "error", "message": "No slug provided" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+    const dataRange = sheet.getDataRange();
+    const values = dataRange.getValues();
+    const headers = values[0];
+    
+    // Find column index for 'Portfolio URL' to extract the slug, or recreate the slug logic based on Full Name.
+    // The Portfolio URL is like 'https://example.com/slug'. So we can check if it ends with the slug.
+    const urlColIndex = headers.indexOf('Portfolio URL');
+    if (urlColIndex === -1) {
+      return ContentService.createTextOutput(JSON.stringify({ "status": "error", "message": "Portfolio URL column not found" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    let rowData = null;
+    for (let i = 1; i < values.length; i++) {
+      const url = values[i][urlColIndex];
+      // Check if this row matches the requested slug
+      if (url && url.endsWith("/" + slug)) {
+        rowData = values[i];
+        break;
+      }
+    }
+    
+    if (!rowData) {
+      return ContentService.createTextOutput(JSON.stringify({ "status": "error", "message": "Portfolio not found" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    // Map array to object matching Employee structure
+    const employee = {
+      fullName: rowData[headers.indexOf('Full Name')] || '',
+      email: rowData[headers.indexOf('Email')] || '',
+      phone: rowData[headers.indexOf('Phone Number')] || '',
+      role: rowData[headers.indexOf('Role')] || '',
+      linkedin: rowData[headers.indexOf('LinkedIn URL')] || '',
+      github: rowData[headers.indexOf('GitHub URL')] || '',
+      resumeUrl: rowData[headers.indexOf('Resume')] || '',
+      profilePhotoUrl: rowData[headers.indexOf('Profile Photo')] || '',
+      laptopName: rowData[headers.indexOf('Laptop Name')] || '',
+      mobileName: rowData[headers.indexOf('Mobile Name')] || '',
+      summary: rowData[headers.indexOf('Summary')] || '',
+      projects: rowData[headers.indexOf('Projects')] ? JSON.parse(rowData[headers.indexOf('Projects')]) : [],
+      submittedAt: rowData[headers.indexOf('Submitted At')] || '',
+      portfolioUrl: rowData[headers.indexOf('Portfolio URL')] || '',
+      slug: slug
+    };
+    
+    return ContentService.createTextOutput(JSON.stringify({ "status": "success", "data": employee }))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({ "status": "error", "message": error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}

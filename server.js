@@ -147,6 +147,26 @@ function generateUniqueSlug(fullName) {
     return slug;
 }
 
+async function fetchEmployeeFromSheet(slug) {
+    if (!process.env.APPS_SCRIPT_WEB_APP_URL) return null;
+    
+    try {
+        const url = `${process.env.APPS_SCRIPT_WEB_APP_URL}?slug=${encodeURIComponent(slug)}`;
+        const response = await fetch(url);
+        if (!response.ok) return null;
+        
+        const data = await response.json();
+        if (data.status === 'success' && data.data) {
+            // Save it locally to warm up the cache
+            saveEmployee(data.data);
+            return data.data;
+        }
+    } catch (e) {
+        console.error("Error fetching from Google Sheet:", e);
+    }
+    return null;
+}
+
 // Fallback for root (Handles serverless environments where static middleware might fail)
 app.get('/', (req, res) => {
     try {
@@ -163,9 +183,13 @@ app.get('/', (req, res) => {
 });
 
 // API endpoint to fetch employee data
-app.get('/api/employee/:slug', (req, res) => {
+app.get('/api/employee/:slug', async (req, res) => {
     const employees = getEmployees();
-    const employee = employees.find(emp => emp.slug === req.params.slug);
+    let employee = employees.find(emp => emp.slug === req.params.slug);
+    
+    if (!employee) {
+        employee = await fetchEmployeeFromSheet(req.params.slug);
+    }
     
     if (!employee) {
         return res.status(404).json({ error: 'Portfolio not found' });
@@ -325,7 +349,7 @@ app.get('/robots.txt', (req, res) => {
 });
 
 // ── Clean URL Portfolio Route ─────────────────────────────────────────────────
-app.get('/:slug', (req, res) => {
+app.get('/:slug', async (req, res) => {
     const slug = req.params.slug;
 
     // Skip static file extensions — express.static handles them
@@ -334,7 +358,11 @@ app.get('/:slug', (req, res) => {
     }
 
     const employees  = getEmployees();
-    const employee   = employees.find(e => e.slug === slug);
+    let employee   = employees.find(e => e.slug === slug);
+
+    if (!employee) {
+        employee = await fetchEmployeeFromSheet(slug);
+    }
 
     if (!employee) {
         return res.status(404).send(generate404HTML(slug));
