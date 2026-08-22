@@ -98,6 +98,27 @@ function doGet(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
     
+    const action = e.parameter.action;
+    
+    // NEW: Sitemap support
+    if (action === 'sitemap') {
+      const slugs = [];
+      for (let i = 1; i < values.length; i++) {
+        const url = values[i][urlColIndex];
+        const submittedAt = values[i][getCol(['Submitted At', 'Date'], 12)];
+        if (url) {
+          const parts = url.toString().split('/');
+          const s = parts[parts.length - 1];
+          if (s) {
+            slugs.push({ slug: s, submittedAt: submittedAt || '' });
+          }
+        }
+      }
+      return ContentService.createTextOutput(JSON.stringify({ "status": "success", "data": slugs }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    // NORMAL ROUTE
     let rowData = null;
     for (let i = 1; i < values.length; i++) {
       const url = values[i][urlColIndex];

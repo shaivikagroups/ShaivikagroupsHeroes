@@ -167,6 +167,22 @@ async function fetchEmployeeFromSheet(slug) {
     return null;
 }
 
+async function fetchSitemapSlugsFromSheet() {
+    if (!process.env.APPS_SCRIPT_WEB_APP_URL) return [];
+    try {
+        const url = `${process.env.APPS_SCRIPT_WEB_APP_URL}?action=sitemap`;
+        const response = await fetch(url);
+        if (!response.ok) return [];
+        const data = await response.json();
+        if (data.status === 'success' && Array.isArray(data.data)) {
+            return data.data;
+        }
+    } catch (e) {
+        console.error("Error fetching sitemap slugs:", e);
+    }
+    return [];
+}
+
 // Fallback for root (Handles serverless environments where static middleware might fail)
 app.get('/', (req, res) => {
     try {
@@ -302,25 +318,31 @@ app.post('/api/submit', upload.fields([
 });
 
 // ── Sitemap ─────────────────────────────────────────────────────────────────
-app.get('/sitemap.xml', (req, res) => {
-    const employees = getEmployees();
+app.get('/sitemap.xml', async (req, res) => {
+    const localEmployees = getEmployees();
+    const sheetsSlugs = await fetchSitemapSlugsFromSheet();
+    
+    const slugMap = new Map();
+    // 1. Add locals
+    localEmployees.forEach(e => {
+        if (e.slug) slugMap.set(e.slug, e.submittedAt || new Date().toISOString());
+    });
+    // 2. Add remote from Sheets
+    sheetsSlugs.forEach(s => {
+        if (s.slug && !slugMap.has(s.slug)) {
+            slugMap.set(s.slug, s.submittedAt || new Date().toISOString());
+        }
+    });
+
     const proto = req.headers['x-forwarded-proto'] || req.protocol;
     const host  = req.headers['x-forwarded-host']  || req.get('host');
     const baseUrl = `${proto}://${host}`;
 
-    const urls = employees
-        .filter(e => e.slug)
-        .map(e => {
-            const loc = `${baseUrl}/${e.slug}`;
-            const lastmod = e.submittedAt
-                ? new Date(e.submittedAt).toISOString().split('T')[0]
-                : new Date().toISOString().split('T')[0];
-            return `  <url>
-    <loc>${loc}</loc>
-    <lastmod>${lastmod}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>`;
+    const urls = Array.from(slugMap.entries())
+        .map(([slug, submittedAt]) => {
+            const loc = `${baseUrl}/${slug}`;
+            const lastmod = new Date(submittedAt).toISOString().split('T')[0];
+            return `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>`;
         })
         .join('\n');
 
@@ -364,7 +386,9 @@ app.get('/:slug', async (req, res) => {
         employee = await fetchEmployeeFromSheet(slug);
     }
 
-    if (!employee) {
+    // STRICT SEO REQUIREMENT: Never render placeholder "Employee"
+    // If the record exists but has no name due to data corruption, throw 404.
+    if (!employee || !employee.fullName || employee.fullName.trim() === '') {
         return res.status(404).send(generate404HTML(slug));
     }
 
