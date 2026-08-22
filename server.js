@@ -200,11 +200,12 @@ app.get('/', (req, res) => {
 
 // API endpoint to fetch employee data
 app.get('/api/employee/:slug', async (req, res) => {
+    const slug = (req.params.slug || '').toLowerCase();
     const employees = getEmployees();
-    let employee = employees.find(emp => emp.slug === req.params.slug);
+    let employee = employees.find(emp => emp.slug === slug);
     
     if (!employee) {
-        employee = await fetchEmployeeFromSheet(req.params.slug);
+        employee = await fetchEmployeeFromSheet(slug);
     }
     
     if (!employee) {
@@ -372,7 +373,7 @@ app.get('/robots.txt', (req, res) => {
 
 // ── Clean URL Portfolio Route ─────────────────────────────────────────────────
 app.get('/:slug', async (req, res) => {
-    const slug = req.params.slug;
+    const slug = (req.params.slug || '').toLowerCase();
 
     // Skip static file extensions — express.static handles them
     if (/\.[a-zA-Z0-9]{1,6}$/.test(slug)) {
