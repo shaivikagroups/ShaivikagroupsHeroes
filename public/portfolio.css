@@ -47,7 +47,7 @@
   --text-2xl: clamp(1.3rem,  3vw,   1.5rem);
   --text-3xl: clamp(1.6rem,  4vw,   2rem);
   --text-4xl: clamp(2rem,    5vw,   2.75rem);
-  --text-hero:clamp(2.5rem,  8vw,   5.5rem);
+  --text-hero:clamp(2.5rem,  6.5vw, 5rem);
 
   /* Radius */
   --r-sm:   0.5rem;
@@ -398,7 +398,7 @@ h1,h2,h3,h4,h5,h6 { line-height: 1.15; }
   box-shadow: var(--sh-sm);
 }
 .pg-about-grid {
-  display: grid; grid-template-columns: 1fr; gap: var(--sp-xl); align-items: start;
+  display: grid; grid-template-columns: 1fr; gap: var(--sp-lg); align-items: start;
 }
 .pg-trait-list { display: flex; flex-direction: column; gap: .75rem; }
 .pg-trait {
@@ -832,7 +832,7 @@ h1,h2,h3,h4,h5,h6 { line-height: 1.15; }
 /* Tablet (768px+) */
 @media (min-width: 768px) {
   .pg-hero-grid {
-    grid-template-columns: 1.1fr 0.9fr; gap: var(--sp-2xl);
+    grid-template-columns: 1fr 1fr; gap: var(--sp-xl);
   }
   .pg-hero-content { order: 1; }
   .pg-hero-visual  { order: 2; }
