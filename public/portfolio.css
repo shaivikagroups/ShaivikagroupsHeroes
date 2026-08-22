@@ -498,8 +498,8 @@ h1,h2,h3,h4,h5,h6 { line-height: 1.15; }
   transform: translateY(-3px); box-shadow: var(--sh-md);
 }
 .pg-tech-icon {
-  width: 42px; height: 42px; border-radius: var(--r-sm);
-  background: var(--surface-2); border: 1px solid var(--border);
+  width: 42px; height: 42px; border-radius: var(--r-sm); font-size: 1.4rem;
+  background: linear-gradient(135deg, rgba(245,158,11,.12), rgba(245,158,11,.06));
   display: grid; place-items: center;
 }
 

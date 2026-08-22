@@ -80,9 +80,19 @@ function doGet(e) {
     const values = dataRange.getValues();
     const headers = values[0];
     
-    // Find column index for 'Portfolio URL' to extract the slug, or recreate the slug logic based on Full Name.
-    // The Portfolio URL is like 'https://example.com/slug'. So we can check if it ends with the slug.
-    const urlColIndex = headers.indexOf('Portfolio URL');
+    // Find column index helper
+    function getCol(names, fallbackIndex) {
+      for (const name of names) {
+        for (let i = 0; i < headers.length; i++) {
+          if (headers[i].toString().trim().toLowerCase() === name.toLowerCase()) {
+            return i;
+          }
+        }
+      }
+      return fallbackIndex; // Fallback to index if header is completely renamed
+    }
+    
+    const urlColIndex = getCol(['Portfolio URL', 'Portfolio', 'URL'], 13);
     if (urlColIndex === -1) {
       return ContentService.createTextOutput(JSON.stringify({ "status": "error", "message": "Portfolio URL column not found" }))
         .setMimeType(ContentService.MimeType.JSON);
@@ -91,8 +101,7 @@ function doGet(e) {
     let rowData = null;
     for (let i = 1; i < values.length; i++) {
       const url = values[i][urlColIndex];
-      // Check if this row matches the requested slug
-      if (url && url.endsWith("/" + slug)) {
+      if (url && url.toString().endsWith("/" + slug)) {
         rowData = values[i];
         break;
       }
@@ -103,24 +112,34 @@ function doGet(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
     
-    // Map array to object matching Employee structure
+    // Map array to object matching Employee structure with robust column detection
     const employee = {
-      fullName: rowData[headers.indexOf('Full Name')] || '',
-      email: rowData[headers.indexOf('Email')] || '',
-      phone: rowData[headers.indexOf('Phone Number')] || '',
-      role: rowData[headers.indexOf('Role')] || '',
-      linkedin: rowData[headers.indexOf('LinkedIn URL')] || '',
-      github: rowData[headers.indexOf('GitHub URL')] || '',
-      resumeUrl: rowData[headers.indexOf('Resume')] || '',
-      profilePhotoUrl: rowData[headers.indexOf('Profile Photo')] || '',
-      laptopName: rowData[headers.indexOf('Laptop Name')] || '',
-      mobileName: rowData[headers.indexOf('Mobile Name')] || '',
-      summary: rowData[headers.indexOf('Summary')] || '',
-      projects: rowData[headers.indexOf('Projects')] ? JSON.parse(rowData[headers.indexOf('Projects')]) : [],
-      submittedAt: rowData[headers.indexOf('Submitted At')] || '',
-      portfolioUrl: rowData[headers.indexOf('Portfolio URL')] || '',
+      fullName: rowData[getCol(['Full Name', 'Name'], 0)] || '',
+      email: rowData[getCol(['Email', 'Email Address'], 1)] || '',
+      phone: rowData[getCol(['Phone Number', 'Phone'], 2)] || '',
+      role: rowData[getCol(['Role', 'Position'], 3)] || '',
+      linkedin: rowData[getCol(['LinkedIn URL', 'LinkedIn'], 4)] || '',
+      github: rowData[getCol(['GitHub URL', 'GitHub'], 5)] || '',
+      resumeUrl: rowData[getCol(['Resume', 'Resume URL'], 6)] || '',
+      profilePhotoUrl: rowData[getCol(['Profile Photo', 'Photo'], 7)] || '',
+      laptopName: rowData[getCol(['Laptop Name', 'Laptop'], 8)] || '',
+      mobileName: rowData[getCol(['Mobile Name', 'Mobile'], 9)] || '',
+      summary: rowData[getCol(['Summary', 'Professional Summary', 'About'], 10)] || '',
+      projects: [],
+      submittedAt: rowData[getCol(['Submitted At', 'Date'], 12)] || '',
+      portfolioUrl: rowData[urlColIndex] || '',
       slug: slug
     };
+
+    // Safely parse projects
+    const projIndex = getCol(['Projects', 'Project'], 11);
+    if (projIndex !== -1 && rowData[projIndex]) {
+      try {
+        employee.projects = JSON.parse(rowData[projIndex]);
+      } catch (e) {
+        employee.projects = [];
+      }
+    }
     
     return ContentService.createTextOutput(JSON.stringify({ "status": "success", "data": employee }))
       .setMimeType(ContentService.MimeType.JSON);
