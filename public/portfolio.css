@@ -510,6 +510,8 @@ h1,h2,h3,h4,h5,h6 { line-height: 1.15; }
   width: 42px; height: 42px; border-radius: var(--r-sm); font-size: 1.4rem;
   background: linear-gradient(135deg, rgba(245,158,11,.12), rgba(245,158,11,.06));
   display: grid; place-items: center;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", sans-serif;
+  font-weight: 400; font-style: normal;
 }
 
 /* 13 ── Connect Section ──────────────────────────────────── */
