@@ -411,6 +411,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 generatedUrlInput.value = result.portfolioUrl;
                 viewPortfolioBtn.href = result.portfolioUrl;
                 successScreen.classList.remove('hidden');
+
+                // Trigger the slow Google Apps Script in the background directly from the frontend
+                // This bypasses the Netlify 10-second backend timeout completely!
+                if (result.appsScriptUrl && result.employeeData) {
+                    fetch(result.appsScriptUrl, {
+                        method: 'POST',
+                        mode: 'no-cors', // Bypasses browser CORS restrictions for Google Web Apps
+                        body: JSON.stringify(result.employeeData)
+                    }).catch(err => console.log('Background sync failed silently:', err));
+                }
             } else {
                 throw new Error(result.error || 'An error occurred during submission.');
             }

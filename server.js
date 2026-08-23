@@ -274,44 +274,32 @@ app.post('/api/submit', upload.fields([
     };
     saveEmployee(newEmployee);
 
-    // 5. Add to Google Sheets & Send Email via Google Apps Script Web App
-    if (process.env.APPS_SCRIPT_WEB_APP_URL) {
-        try {
-            const appScriptResponse = await fetch(process.env.APPS_SCRIPT_WEB_APP_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    fullName,
-                    email: email.toLowerCase(),
-                    phone,
-                    role,
-                    linkedin,
-                    github,
-                    resume: resumeUrl,
-                    profilePhoto: profilePhotoUrl,
-                    laptopName,
-                    mobileName,
-                    summary,
-                    projects: JSON.stringify(parsedProjects),
-                    submittedAt: newEmployee.submittedAt,
-                    portfolioUrl
-                })
-            });
-            const textResponse = await appScriptResponse.text();
-            console.log('Apps Script Response:', textResponse);
-        } catch (appScriptError) {
-            console.error('Failed to trigger Apps Script:', appScriptError);
-        }
-    } else {
-        console.warn("APPS_SCRIPT_WEB_APP_URL not configured. Skipping sheets upload & email.");
-    }
+    // 5. Decouple Google Apps Script to bypass Netlify 10s Serverless timeout
+    // We send the appsScriptUrl and the exact payload to the frontend, 
+    // which will execute the slow Apps Script fetch in the background.
+    const employeeDataPayload = {
+        fullName,
+        email: email.toLowerCase(),
+        phone,
+        role,
+        linkedin,
+        github,
+        resume: resumeUrl,
+        profilePhoto: profilePhotoUrl,
+        laptopName,
+        mobileName,
+        summary,
+        projects: JSON.stringify(parsedProjects),
+        submittedAt: newEmployee.submittedAt,
+        portfolioUrl
+    };
 
     res.status(200).json({ 
       success: true, 
       message: 'Profile completed successfully.',
-      portfolioUrl: portfolioUrl
+      portfolioUrl: portfolioUrl,
+      appsScriptUrl: process.env.APPS_SCRIPT_WEB_APP_URL || null,
+      employeeData: employeeDataPayload
     });
 
   } catch (error) {
