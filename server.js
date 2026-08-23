@@ -234,11 +234,18 @@ app.post('/api/submit', upload.fields([
 
     // 1 & 2. Upload Profile Photo and Resume (Parallelized to avoid 10s serverless timeouts)
     const photoFilename = `photo_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-    const resumeFilename = `employee_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+    
+    // Determine optimal Cloudinary resource type for the Resume
+    const isPDF = req.files.resume[0].mimetype === 'application/pdf';
+    const resumeResourceType = isPDF ? 'image' : 'raw';
+    // Append .pdf to the filename if it's a PDF so Cloudinary correctly identifies and serves it
+    const resumeFilename = isPDF 
+        ? `employee_${Date.now()}_${Math.random().toString(36).substring(7)}.pdf`
+        : `employee_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
     const [photoResult, resumeResult] = await Promise.all([
         uploadToCloudinary(req.files.profilePhoto[0].buffer, photoFilename, 'shaivika/employees/profile-photos', 'image'),
-        uploadToCloudinary(req.files.resume[0].buffer, resumeFilename, 'shaivika/employees/resumes', 'raw')
+        uploadToCloudinary(req.files.resume[0].buffer, resumeFilename, 'shaivika/employees/resumes', resumeResourceType)
     ]);
 
     // Apply optimizations (f_auto, q_auto) to the URL
