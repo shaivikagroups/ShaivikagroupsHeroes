@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Photo
-    setupUpload(photoZone, photoInput, photoContent, photoPreview, photoError, 5, 
+    setupUpload(photoZone, photoInput, photoContent, photoPreview, photoError, 2, // Reduced from 5MB to 2MB to prevent Netlify 6MB Payload limit timeout
         ['image/jpeg', 'image/png', 'image/webp'], true, 
         (file) => {
             selectedPhoto = file;
@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Resume
-    setupUpload(resumeZone, resumeInput, resumeContent, resumePreview, resumeError, 10, 
+    setupUpload(resumeZone, resumeInput, resumeContent, resumePreview, resumeError, 3, // Reduced from 10MB to 3MB to prevent Netlify 6MB Payload limit timeout
         ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'], false, 
         (file) => {
             selectedResume = file;

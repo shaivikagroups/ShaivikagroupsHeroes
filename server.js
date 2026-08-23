@@ -232,15 +232,17 @@ app.post('/api/submit', upload.fields([
         return res.status(400).json({ error: 'Profile photo is required.' });
     }
 
-    // 1. Upload Profile Photo
+    // 1 & 2. Upload Profile Photo and Resume (Parallelized to avoid 10s serverless timeouts)
     const photoFilename = `photo_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-    const photoResult = await uploadToCloudinary(req.files.profilePhoto[0].buffer, photoFilename, 'shaivika/employees/profile-photos', 'image');
+    const resumeFilename = `employee_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+
+    const [photoResult, resumeResult] = await Promise.all([
+        uploadToCloudinary(req.files.profilePhoto[0].buffer, photoFilename, 'shaivika/employees/profile-photos', 'image'),
+        uploadToCloudinary(req.files.resume[0].buffer, resumeFilename, 'shaivika/employees/resumes', 'raw')
+    ]);
+
     // Apply optimizations (f_auto, q_auto) to the URL
     const profilePhotoUrl = photoResult.secure_url.replace('/upload/', '/upload/f_auto,q_auto/');
-
-    // 2. Upload Resume
-    const resumeFilename = `employee_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-    const resumeResult = await uploadToCloudinary(req.files.resume[0].buffer, resumeFilename, 'shaivika/employees/resumes', 'raw');
     const resumeUrl = resumeResult.secure_url;
 
     // 3. Generate Slug and Portfolio URL
