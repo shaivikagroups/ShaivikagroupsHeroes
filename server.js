@@ -183,6 +183,34 @@ async function fetchSitemapSlugsFromSheet() {
     return [];
 }
 
+// Secure proxy to fetch legacy Cloudinary raw assets and force inline viewing in browser
+app.get('/api/proxy-resume', async (req, res) => {
+    const targetUrl = req.query.url;
+    if (!targetUrl || !targetUrl.includes('res.cloudinary.com')) {
+        return res.status(400).send('Invalid URL');
+    }
+    try {
+        const response = await fetch(targetUrl);
+        if (!response.ok) throw new Error('Failed to fetch asset');
+        
+        // Get original content type or default to PDF
+        const contentType = response.headers.get('content-type') || 'application/pdf';
+        
+        // Read the file data
+        const buffer = await response.arrayBuffer();
+        
+        // Override Cloudinary's forced attachment header to allow native browser rendering
+        res.setHeader('Content-Type', contentType.includes('octet-stream') ? 'application/pdf' : contentType);
+        res.setHeader('Content-Disposition', 'inline');
+        
+        res.send(Buffer.from(buffer));
+    } catch (e) {
+        console.error("Proxy error:", e);
+        // Fallback to Google Docs viewer if the proxy fails
+        res.redirect(`https://docs.google.com/viewer?url=${encodeURIComponent(targetUrl)}&embedded=true`);
+    }
+});
+
 // Fallback for root (Handles serverless environments where static middleware might fail)
 app.get('/', (req, res) => {
     try {
