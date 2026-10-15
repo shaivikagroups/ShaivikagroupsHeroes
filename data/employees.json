@@ -12,7 +12,12 @@
       {
         "name": "AI LeXa Lawyer",
         "description": "An AI-powered legal assistant that helps users understand complex legal documents and provides intelligent recommendations based on case context using Machine Learning and Natural Language Processing.",
-        "technologies": ["Python", "C", "ML", "AI"],
+        "technologies": [
+          "Python",
+          "C",
+          "ML",
+          "AI"
+        ],
         "projectUrl": "https://www.linkedin.com/in/sharabu-manoj-kumar/",
         "githubUrl": "https://github.com/SHARABUMANOJKUMAR"
       }
@@ -35,7 +40,13 @@
       {
         "name": "AI LeXa Lawyer",
         "description": "An AI-powered legal assistant platform with automated DevOps pipelines enabling continuous deployment across cloud environments using Python, Java, and ML technologies.",
-        "technologies": ["Python", "C", "Java", "AI", "ML"],
+        "technologies": [
+          "Python",
+          "C",
+          "Java",
+          "AI",
+          "ML"
+        ],
         "projectUrl": "https://docs.google.com/presentation/",
         "githubUrl": "https://docs.google.com/presentation/"
       }
@@ -58,14 +69,25 @@
       {
         "name": "AI LeXa Lawyer",
         "description": "An AI-powered legal assistant that simplifies legal research and document analysis using Natural Language Processing and Machine Learning, helping users understand complex legal matters efficiently.",
-        "technologies": ["Python", "AI", "ML", "NLP"],
+        "technologies": [
+          "Python",
+          "AI",
+          "ML",
+          "NLP"
+        ],
         "projectUrl": "https://www.linkedin.com/in/sharabu-manoj-kumar/",
         "githubUrl": "https://github.com/SHARABUMANOJKUMAR"
       },
       {
         "name": "Shaivika Employee Portfolio Builder",
         "description": "A full-stack web application that automatically generates professional portfolio pages for employees. Features include Cloudinary media uploads, Google Sheets integration, and clean URL generation.",
-        "technologies": ["Node.js", "Express", "HTML", "CSS", "JavaScript"],
+        "technologies": [
+          "Node.js",
+          "Express",
+          "HTML",
+          "CSS",
+          "JavaScript"
+        ],
         "projectUrl": "https://shaivikagroupsheros.netlify.app",
         "githubUrl": "https://github.com/SHARABUMANOJKUMAR/ShaivikagroupsHeroes"
       }
@@ -74,5 +96,32 @@
     "resumeUrl": "https://res.cloudinary.com/dzfntkzce/raw/upload/v1787323029/shaivika/employees/resumes/employee_1787323029779_t1kbyt",
     "portfolioUrl": "https://shaivikagroupsheros.netlify.app/sharabu-manoj-kumar",
     "submittedAt": "2026-08-22T01:00:00.000Z"
+  },
+  {
+    "slug": "s-manoj-kumar",
+    "fullName": "S Manoj Kumar",
+    "email": "sharabumanojkumar@gmail.com",
+    "phone": "7013550760",
+    "role": "Intern",
+    "linkedin": "https://www.google.com/",
+    "github": "https://www.google.com/",
+    "summary": "Hallo Person,",
+    "projects": [
+      {
+        "name": "Project",
+        "description": "ygb8yu b8 yg6",
+        "technologies": [
+          "c",
+          "java",
+          "python"
+        ],
+        "projectUrl": "",
+        "githubUrl": ""
+      }
+    ],
+    "profilePhotoUrl": "https://res.cloudinary.com/dzfntkzce/image/upload/f_auto,q_auto/v1792082856/shaivika/employees/profile-photos/photo_1792082854821_4g5ze.png",
+    "resumeUrl": "https://res.cloudinary.com/dzfntkzce/image/upload/v1792082856/shaivika/employees/resumes/employee_1792082854821_myrsid.pdf.pdf",
+    "portfolioUrl": "http://localhost:3001/s-manoj-kumar",
+    "submittedAt": "2026-10-15T16:47:37.452Z"
   }
 ]
