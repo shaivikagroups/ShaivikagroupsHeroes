@@ -1,3 +1,9 @@
+// Security Notice
+if (typeof console !== 'undefined' && console.log) {
+    console.log('%c🔒 Shaivika Security Notice', 'color: #5A2EDB; font-size: 18px; font-weight: bold;');
+    console.log('%cThis browser feature is intended for developers. All critical operations, secrets, and cloud integrations are strictly encapsulated server-side.', 'color: #64748b; font-size: 11px;');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // --- Elements ---
     const form = document.getElementById('onboarding-form');
@@ -412,14 +418,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 viewPortfolioBtn.href = result.portfolioUrl;
                 successScreen.classList.remove('hidden');
 
-                // Trigger the slow Google Apps Script in the background directly from the frontend
-                // This bypasses the Netlify 10-second backend timeout completely!
-                if (result.appsScriptUrl && result.employeeData) {
-                    fetch(result.appsScriptUrl, {
+                // Trigger background Google Sheets sync via our secure internal endpoint (Zero secrets exposed)
+                if (result.slug) {
+                    fetch('/api/sync-sheet', {
                         method: 'POST',
-                        mode: 'no-cors', // Bypasses browser CORS restrictions for Google Web Apps
-                        body: JSON.stringify(result.employeeData)
-                    }).catch(err => console.log('Background sync failed silently:', err));
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ slug: result.slug })
+                    }).catch(function () {});
                 }
             } else {
                 throw new Error(result.error || 'An error occurred during submission.');

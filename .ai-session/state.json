@@ -1,18 +1,26 @@
 {
-  "last_updated": "2026-10-15T22:19:30+05:30",
+  "last_updated": "2026-10-16T11:41:50+05:30",
   "completed": [
     "Identified missing 'dev' script in package.json",
     "Added 'dev': 'node --watch server.js' to package.json scripts",
     "Diagnosed port 3000 collision and configured PORT=3001 in .env",
     "Verified application running and responding with 200 OK on http://localhost:3001",
-    "Maintained API documentation in docs/api.md"
+    "Identified root cause of Cloudinary resume download ERR_INVALID_RESPONSE (401 on image PDF delivery and 400 on malformed fl_attachment with extension)",
+    "Confirmed Cloudinary account 'Allow delivery of PDF and ZIP files' setting is enabled",
+    "Fixed Cloudinary fl_attachment parameter in lib/portfolioRenderer.js to omit extension per Cloudinary syntax",
+    "Removed appsScriptUrl and raw device hardware data from /api/submit client response",
+    "Created secure server-side /api/sync-sheet endpoint so Google Apps Script URL is 100% invisible in DevTools",
+    "Added rate limiting, input sanitization, and strict SSRF host/cloud verification on /api/proxy-resume",
+    "Disabled X-Powered-By and added strict production security headers (X-Content-Type-Options, X-Frame-Options, Referrer-Policy)",
+    "Added DevTools console security notice in public/app.js and public/portfolio.js",
+    "Untracked .env from git, created .env.example, and updated .gitignore",
+    "Updated docs/api.md with complete security architecture and endpoint specifications"
   ],
-  "in_progress": [
-    "Pushing changes to GitHub repository"
-  ],
+  "in_progress": [],
   "pending": [],
   "decisions": [
-    "Committed dev script for node --watch and API documentation"
+    "Encapsulated Google Apps Script Web App URL on backend by adding /api/sync-sheet proxy endpoint, completely concealing external tokens from DevTools",
+    "Removed .env from git cache and added to .gitignore to protect secrets from source control leaks"
   ],
   "blockers": []
 }

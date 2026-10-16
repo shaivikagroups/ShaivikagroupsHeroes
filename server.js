@@ -11,12 +11,69 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// EJS removed for purely static frontend
+// Security: Disable X-Powered-By to prevent technology fingerprinting
+app.disable('x-powered-by');
+
+// Security: Enforce strict production headers
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  next();
+});
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '1mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Structured Audit Logger (System-Wide Standard)
+function auditLog(actor, action, resourceId, status, details = {}) {
+  const entry = {
+    timestamp: new Date().toISOString(),
+    actor: actor || 'anonymous',
+    action: action,
+    resource_id: resourceId || 'system',
+    status: status,
+    ...details
+  };
+  console.log(JSON.stringify(entry));
+}
+
+// In-memory rate limiter to prevent API abuse & brute force
+const rateLimitMap = new Map();
+function rateLimiter({ windowMs = 15 * 60 * 1000, max = 25, message = 'Too many requests. Please try again later.' }) {
+  return (req, res, next) => {
+    const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.socket.remoteAddress || 'unknown';
+    const now = Date.now();
+    const record = rateLimitMap.get(ip) || { count: 0, resetTime: now + windowMs };
+
+    if (now > record.resetTime) {
+      record.count = 0;
+      record.resetTime = now + windowMs;
+    }
+
+    record.count++;
+    rateLimitMap.set(ip, record);
+
+    if (record.count > max) {
+      auditLog(ip, 'rate_limit_exceeded', req.path, 'blocked');
+      return res.status(429).json({ error: message });
+    }
+    next();
+  };
+}
+
+// Input sanitizer helper to block XSS and malicious script payloads
+function sanitizeText(str, maxLen = 500) {
+  if (typeof str !== 'string') return '';
+  return str
+    .replace(/<[^>]*>/g, '') // Strip HTML tags
+    .trim()
+    .slice(0, maxLen);
+}
 
 // Configure Cloudinary
 cloudinary.config({
@@ -183,30 +240,47 @@ async function fetchSitemapSlugsFromSheet() {
     return [];
 }
 
-// Secure proxy to fetch legacy Cloudinary raw assets and force inline viewing in browser
+// Secure proxy to fetch Cloudinary raw/image assets and stream safely to the browser
 app.get('/api/proxy-resume', async (req, res) => {
     const targetUrl = req.query.url;
-    if (!targetUrl || !targetUrl.includes('res.cloudinary.com')) {
-        return res.status(400).send('Invalid URL');
+    if (!targetUrl) {
+        return res.status(400).send('Missing URL parameter.');
     }
+
     try {
+        const parsed = new URL(targetUrl);
+        const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+        
+        // Strict SSRF validation: only HTTPS, only Cloudinary CDN, and strictly scoped to this account
+        if (parsed.protocol !== 'https:' || parsed.hostname !== 'res.cloudinary.com') {
+            auditLog('security', 'proxy_rejected_unauthorized_host', parsed.hostname, 'blocked');
+            return res.status(403).send('Forbidden: External host not permitted.');
+        }
+
+        if (cloudName && !parsed.pathname.startsWith(`/${cloudName}/`)) {
+            auditLog('security', 'proxy_rejected_invalid_cloud', parsed.pathname, 'blocked');
+            return res.status(403).send('Forbidden: Cloud environment mismatch.');
+        }
+
+        const isDownload = req.query.download === 'true';
+        const rawFilename = req.query.filename || 'Resume.pdf';
+        const safeFilename = rawFilename.replace(/[^a-zA-Z0-9_\-\.]/g, '');
+
         const response = await fetch(targetUrl);
-        if (!response.ok) throw new Error('Failed to fetch asset');
+        if (!response.ok) throw new Error(`Cloudinary returned HTTP ${response.status}`);
         
-        // Get original content type or default to PDF
         const contentType = response.headers.get('content-type') || 'application/pdf';
-        
-        // Read the file data
         const buffer = await response.arrayBuffer();
         
-        // Override Cloudinary's forced attachment header to allow native browser rendering
         res.setHeader('Content-Type', contentType.includes('octet-stream') ? 'application/pdf' : contentType);
-        res.setHeader('Content-Disposition', 'inline');
+        res.setHeader('Content-Disposition', isDownload ? `attachment; filename="${safeFilename}"` : 'inline');
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        res.setHeader('X-Content-Type-Options', 'nosniff');
         
         res.send(Buffer.from(buffer));
     } catch (e) {
-        console.error("Proxy error:", e);
-        // Fallback to Google Docs viewer if the proxy fails
+        auditLog('system', 'proxy_resume_error', targetUrl, 'failed', { error: e.message });
+        // Fallback to Google Docs viewer if direct streaming fails
         res.redirect(`https://docs.google.com/viewer?url=${encodeURIComponent(targetUrl)}&embedded=true`);
     }
 });
@@ -218,7 +292,6 @@ app.get('/', (req, res) => {
         if (fs.existsSync(indexPath)) {
             res.sendFile(indexPath);
         } else {
-            // Fallback to process.cwd() for some serverless setups
             res.sendFile(path.join(process.cwd(), 'public', 'index.html'));
         }
     } catch (e) {
@@ -243,40 +316,91 @@ app.get('/api/employee/:slug', async (req, res) => {
     res.json(employee);
 });
 
-// API Endpoint to submit form
-app.post('/api/submit', upload.fields([
+// Server-side buffer for pending Google Sheets sync (Keeps secrets 100% off DevTools)
+const pendingSheetSync = new Map();
+
+async function triggerSheetSync(slug) {
+    if (!process.env.APPS_SCRIPT_WEB_APP_URL) return false;
+    
+    const payload = pendingSheetSync.get(slug);
+    if (!payload) return false;
+
+    try {
+        const response = await fetch(process.env.APPS_SCRIPT_WEB_APP_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            pendingSheetSync.delete(slug);
+            auditLog('system', 'google_sheet_sync', slug, 'success');
+            return true;
+        } else {
+            auditLog('system', 'google_sheet_sync', slug, 'failed', { http_status: response.status });
+        }
+    } catch (err) {
+        auditLog('system', 'google_sheet_sync', slug, 'failed', { error: err.message });
+    }
+    return false;
+}
+
+// Secure server-side decoupled sync endpoint (DevTools only sees this relative endpoint)
+app.post('/api/sync-sheet', rateLimiter({ windowMs: 15 * 60 * 1000, max: 30 }), async (req, res) => {
+    const slug = (req.body.slug || '').toLowerCase();
+    if (!slug) {
+        return res.status(400).json({ error: 'Slug is required' });
+    }
+
+    // Trigger sync asynchronously on the server
+    const success = await triggerSheetSync(slug);
+    res.json({ success });
+});
+
+// API Endpoint to submit form (Hardened with rate limiting, input sanitization, and secret encapsulation)
+app.post('/api/submit', 
+  rateLimiter({ windowMs: 15 * 60 * 1000, max: 10, message: 'Submission limit reached for this session. Please try again later.' }),
+  upload.fields([
     { name: 'resume', maxCount: 1 },
     { name: 'profilePhoto', maxCount: 1 }
-]), async (req, res) => {
+  ]), 
+  async (req, res) => {
   try {
-    const { 
-      fullName, email, phone, role, linkedin, github, laptopName, mobileName, summary, projects
-    } = req.body;
+    const fullName   = sanitizeText(req.body.fullName, 100);
+    const email      = sanitizeText(req.body.email, 150).toLowerCase();
+    const phone      = sanitizeText(req.body.phone, 25);
+    const role       = sanitizeText(req.body.role, 100);
+    const linkedin   = sanitizeText(req.body.linkedin, 250);
+    const github     = sanitizeText(req.body.github, 250);
+    const laptopName = sanitizeText(req.body.laptopName, 100);
+    const mobileName = sanitizeText(req.body.mobileName, 100);
+    const summary    = sanitizeText(req.body.summary, 3000);
+    const projects   = req.body.projects || '[]';
 
+    // Strict validation
+    if (!fullName) {
+      return res.status(400).json({ error: 'Full name is required.' });
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      return res.status(400).json({ error: 'Valid email address is required.' });
+    }
     if (!req.files || !req.files.resume) {
       return res.status(400).json({ error: 'Resume file is required.' });
     }
     if (!req.files || !req.files.profilePhoto) {
-        return res.status(400).json({ error: 'Profile photo is required.' });
+      return res.status(400).json({ error: 'Profile photo is required.' });
     }
 
-    // 1 & 2. Upload Profile Photo and Resume (Parallelized to avoid 10s serverless timeouts)
+    // 1 & 2. Upload Profile Photo and Resume
     const photoFilename = `photo_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-    
-    // Determine optimal Cloudinary resource type for the Resume
-    const isPDF = req.files.resume[0].mimetype === 'application/pdf';
-    const resumeResourceType = isPDF ? 'image' : 'raw';
-    // Append .pdf to the filename if it's a PDF so Cloudinary correctly identifies and serves it
-    const resumeFilename = isPDF 
-        ? `employee_${Date.now()}_${Math.random().toString(36).substring(7)}.pdf`
-        : `employee_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+    const resumeFilename = `employee_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
     const [photoResult, resumeResult] = await Promise.all([
         uploadToCloudinary(req.files.profilePhoto[0].buffer, photoFilename, 'shaivika/employees/profile-photos', 'image'),
-        uploadToCloudinary(req.files.resume[0].buffer, resumeFilename, 'shaivika/employees/resumes', resumeResourceType)
+        uploadToCloudinary(req.files.resume[0].buffer, resumeFilename, 'shaivika/employees/resumes', 'image')
     ]);
 
-    // Apply optimizations (f_auto, q_auto) to the URL
     const profilePhotoUrl = photoResult.secure_url.replace('/upload/', '/upload/f_auto,q_auto/');
     const resumeUrl = resumeResult.secure_url;
 
@@ -286,10 +410,19 @@ app.post('/api/submit', upload.fields([
     const host    = req.headers['x-forwarded-host']  || req.get('host');
     const portfolioUrl = `${proto}://${host}/${slug}`;
 
-    // 4. Save to Local Cache (Excluding private device data for rendering safety)
+    // 4. Save to Local Cache (Strictly excluding private device data from public profile)
     let parsedProjects = [];
     try {
         parsedProjects = JSON.parse(projects);
+        if (Array.isArray(parsedProjects)) {
+            parsedProjects = parsedProjects.map(p => ({
+                name: sanitizeText(p.name, 100),
+                description: sanitizeText(p.description, 1000),
+                technologies: Array.isArray(p.technologies) ? p.technologies.map(t => sanitizeText(t, 50)) : [],
+                projectUrl: sanitizeText(p.projectUrl, 250),
+                githubUrl: sanitizeText(p.githubUrl, 250)
+            }));
+        }
     } catch(e) {}
 
     const newEmployee = {
@@ -309,12 +442,10 @@ app.post('/api/submit', upload.fields([
     };
     saveEmployee(newEmployee);
 
-    // 5. Decouple Google Apps Script to bypass Netlify 10s Serverless timeout
-    // We send the appsScriptUrl and the exact payload to the frontend, 
-    // which will execute the slow Apps Script fetch in the background.
+    // 5. Store private hardware and sync details server-side only
     const employeeDataPayload = {
         fullName,
-        email: email.toLowerCase(),
+        email,
         phone,
         role,
         linkedin,
@@ -329,16 +460,25 @@ app.post('/api/submit', upload.fields([
         portfolioUrl
     };
 
+    pendingSheetSync.set(slug, employeeDataPayload);
+    // Auto-cleanup after 15 minutes if not collected
+    setTimeout(() => { pendingSheetSync.delete(slug); }, 15 * 60 * 1000);
+
+    // Trigger immediate background sync
+    triggerSheetSync(slug).catch(() => {});
+
+    auditLog(email, 'profile_submitted', slug, 'success');
+
+    // SECURE RESPONSE: Zero secrets, Zero private hardware fields, Zero Google Script URLs exposed
     res.status(200).json({ 
       success: true, 
       message: 'Profile completed successfully.',
       portfolioUrl: portfolioUrl,
-      appsScriptUrl: process.env.APPS_SCRIPT_WEB_APP_URL || null,
-      employeeData: employeeDataPayload
+      slug: slug
     });
 
   } catch (error) {
-    console.error('Submission Error:', error);
+    auditLog('unknown', 'profile_submission_error', 'unknown', 'failed', { error: error.message });
     res.status(500).json({ error: error.message || 'An error occurred during submission.' });
   }
 });

@@ -6,6 +6,11 @@
 (function () {
     'use strict';
 
+    if (typeof console !== 'undefined' && console.log) {
+        console.log('%c🔒 Shaivika Security Notice', 'color: #5A2EDB; font-size: 16px; font-weight: bold;');
+        console.log('%cProtected employee portfolio system. All assets and endpoints are served with strict origin policies.', 'color: #64748b; font-size: 11px;');
+    }
+
     // ── Hamburger Menu ───────────────────────────────────────
     const hamburger = document.getElementById('pg-hamburger');
     const mobileMenu = document.getElementById('pg-mobile-menu');

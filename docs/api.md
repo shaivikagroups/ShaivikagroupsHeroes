@@ -1,5 +1,14 @@
 # API Documentation
 
+## Security Architecture & Policies
+- **Technology Cloaking**: `X-Powered-By` header is strictly disabled to prevent server profiling.
+- **Security Headers**: All responses include `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy: strict-origin-when-cross-origin`, and `X-XSS-Protection`.
+- **Secret Encapsulation**: Cloudinary secrets and Google Apps Script Web App endpoints are strictly server-side and never exposed to the client or Developer Tools.
+- **Rate Limiting**: Built-in in-memory rate limiting applied to `/api/submit` and `/api/sync-sheet`.
+- **SSRF Protection**: Proxy endpoints strictly whitelist the application's assigned Cloudinary account domain.
+
+---
+
 ## Endpoints
 
 ### 1. Root / Home Page
@@ -61,17 +70,18 @@
 - **Method**: `POST`
 - **Path**: `/api/submit`
 - **Content-Type**: `multipart/form-data`
-- **Description**: Handles file uploads (profile photo and resume) to Cloudinary, creates employee record, caches locally, and returns payload for Google Apps Script sync.
+- **Security**: Rate-limited (max 10 submissions per 15 min per IP), sanitized inputs.
+- **Description**: Uploads media to Cloudinary, creates employee record, buffers server-side Google Sheets synchronization payload, and returns clean portfolio details without exposing external URLs.
 - **Form Data Fields**:
-  - `fullName` (string, required)
-  - `email` (string, required)
-  - `phone` (string)
-  - `role` (string)
-  - `linkedin` (string)
-  - `github` (string)
-  - `laptopName` (string)
-  - `mobileName` (string)
-  - `summary` (string)
+  - `fullName` (string, required, max 100 chars)
+  - `email` (string, required, valid email format)
+  - `phone` (string, max 25 chars)
+  - `role` (string, max 100 chars)
+  - `linkedin` (string, max 250 chars)
+  - `github` (string, max 250 chars)
+  - `laptopName` (string, max 100 chars - stored securely server-side)
+  - `mobileName` (string, max 100 chars - stored securely server-side)
+  - `summary` (string, max 3000 chars)
   - `projects` (JSON string array)
   - `profilePhoto` (file, required - jpg/png/webp up to 10MB)
   - `resume` (file, required - pdf/doc/docx up to 10MB)
@@ -82,13 +92,16 @@
       "success": true,
       "message": "Profile completed successfully.",
       "portfolioUrl": "http://localhost:3001/john-doe",
-      "appsScriptUrl": "https://script.google.com/macros/s/.../exec",
-      "employeeData": { ... }
+      "slug": "john-doe"
     }
     ```
   - `400 Bad Request`:
     ```json
     { "error": "Resume file is required." }
+    ```
+  - `429 Too Many Requests`:
+    ```json
+    { "error": "Submission limit reached for this session. Please try again later." }
     ```
   - `500 Internal Server Error`:
     ```json
@@ -97,20 +110,48 @@
 
 ---
 
-### 5. Proxy Resume Asset
+### 5. Decoupled Sheet Synchronization
+- **Method**: `POST`
+- **Path**: `/api/sync-sheet`
+- **Content-Type**: `application/json`
+- **Security**: Rate-limited (max 30 requests per 15 min per IP), relative internal routing.
+- **Description**: Triggers server-side push of the buffered employee record to Google Apps Script. Shields Google Apps Script Web App URL and private device details from browser Developer Tools.
+- **Request Body**:
+  ```json
+  {
+    "slug": "john-doe"
+  }
+  ```
+- **Responses**:
+  - `200 OK`:
+    ```json
+    { "success": true }
+    ```
+  - `400 Bad Request`:
+    ```json
+    { "error": "Slug is required" }
+    ```
+
+---
+
+### 6. Proxy Resume Asset
 - **Method**: `GET`
 - **Path**: `/api/proxy-resume`
-- **Description**: Fetches Cloudinary raw assets and serves them with `inline` Content-Disposition to enable native browser rendering.
+- **Security**: Strict SSRF verification; whitelisted to `res.cloudinary.com` scoped to current Cloudinary cloud name.
+- **Description**: Fetches Cloudinary assets and streams them to the browser. Supports inline viewing and sanitized attachment downloads.
 - **Query Parameters**:
   - `url` (string, required): Cloudinary asset URL.
+  - `download` (boolean, optional): Set to `true` to force attachment download.
+  - `filename` (string, optional): Clean filename for download header.
 - **Responses**:
-  - `200 OK`: Binary stream (`application/pdf`) with inline disposition.
-  - `400 Bad Request`: Returns `"Invalid URL"` if target URL is missing or not a Cloudinary link.
+  - `200 OK`: Binary stream (`application/pdf`) with `inline` or `attachment` Content-Disposition.
+  - `400 Bad Request`: Returns `"Missing URL parameter."`
+  - `403 Forbidden`: Returns `"Forbidden"` if URL is not an authorized Cloudinary asset.
   - `302 Found`: Redirects to Google Docs Viewer fallback if fetching fails.
 
 ---
 
-### 6. XML Sitemap
+### 7. XML Sitemap
 - **Method**: `GET`
 - **Path**: `/sitemap.xml`
 - **Description**: Generates an XML sitemap of all active employee profiles and root page.
@@ -119,7 +160,7 @@
 
 ---
 
-### 7. Robots.txt
+### 8. Robots.txt
 - **Method**: `GET`
 - **Path**: `/robots.txt`
 - **Description**: Provides web crawler instructions.
